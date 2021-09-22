@@ -9,23 +9,29 @@ var express = require('express');
 var http = require('http');
 var _dirname = require('path').dirname(require.main.filename);
 var app = express();
-var server = http.Server(app);
+app.use('/static', express.static(_dirname + "/static"));
 
+
+var server = http.Server(app);
+var FastRateLimit = require("@kidkarolis/not-so-fast");
 var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-
-var randomToken = require('random-token');
-
 var MP = require("./mp-events.js");
-
 var fs = require('fs');
 
-var cal = "";
-app.use('/static', express.static(_dirname + "/static"));
+
 
 var test = new MP(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.ROOT);
 var events = [];
+var cal = "";
+
+//RATE LIMITING
+var ips = [];
+var highCostLimiter = new FastRateLimit({
+	threshold : 10, // available tokens over timespan
+	ttl       : 60  // time-to-live value of token bucket (in seconds)
+  });
 
 //Default Server Config
 var WEB_TITLE = "Events";
@@ -87,17 +93,33 @@ app.get("/api/data/config", (req, res) => {
 
 //wrap in rate limiter
 app.get("/api/data", (req, res) => {
-	res.send(events);
+	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
+	.then(() => {
+		//token consumed
+		//okay to send
+		res.send(events);
+	})
+	.catch(() => {
+		// No more token for namespace in current timespan
+    	// Silently discard message
+    	debug("All tokens consumed by " + req.ip);
+    	//res.send({"result": "failed", "reason": "rate limit", "data": ""});
+	});
 });
 
 app.get('/api/update', function(req, res){
-	if(WEBHOOK_UPDATE){
-		debug("update triggered");
-		res.send("Success!");
-		asyncEvents();
-	} else 
-	res.sendStatus(404);
-
+	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
+	.then(() => {
+		if(WEBHOOK_UPDATE){
+			debug("update triggered");
+			res.send("Success!");
+			asyncEvents();
+		} else 
+		res.sendStatus(404);
+	})
+	.catch(() => {
+		debug("All tokens consumed by " + req.ip);
+	});
 });
 
 app.get("/api/debug", (req, res) => {
@@ -284,6 +306,22 @@ function configServer(){
 	ready = true;
 	return 0;
 }
+
+//ip address push and namespace
+function ipTrack(ip){
+	for(var i = 0; i < ips.length; i++){
+	  if(ip == ips[i].ip){
+		//return index of ip
+		return i;
+	  }
+	}
+
+	//ips.push({"ip": ip, "to": to});
+	ips.push({"ip": ip});
+  
+	//return index
+	return ips.length - 1;
+  }
 
 
 function debug(msg){
