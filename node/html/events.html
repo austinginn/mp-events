@@ -1,0 +1,541 @@
+
+<!DOCTYPE html>
+<html lang="en" class="show-contacts">
+
+<head>
+
+  <meta charset="UTF-8">
+
+<link rel="apple-touch-icon" type="image/png" href="/static/am_favicon.png" />
+<link rel="shortcut icon" type="image/png" href="/static/am_favicon.png"/>
+<meta name="apple-mobile-web-app-title" content="AM Events">
+
+
+  <title>AM Events</title>
+      <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AM Events</title>
+
+
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css'>
+
+<style>
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,700);
+
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+
+}
+
+html{
+  font-size: 62.5%;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+body{
+  background-color: rgb(34, 34, 39);
+}
+
+::-webkit-scrollbar {
+    width: 0px;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
+
+.app{
+    max-width: 1000px;
+  margin: auto;
+  box-shadow: 0 0.5rem 3rem rgb(0 0 0 / 40%);
+}
+
+.container{
+  width:100%;
+  height: 100%;
+/*   background-color: #12121f; */
+  display: flex;
+  justify-content: center;
+/*   align-items: center; */
+
+}
+
+.calendar{
+  width: 100%;
+/*   height: 50%; */
+/*   background-color: #222227; */
+  /* box-shadow: 0 0.5rem 3rem rgba(0,0,0, 0.4); */
+}
+
+.month{
+  width: 100%;
+  height: 8rem;
+  background-color: #BE202F;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  text-align: center;
+/*   text-shadow: 0 .3rem .5rem rgba(0,0,0,0.5); */
+}
+
+.month i{
+  font-size: 2.5rem;
+  cursor: pointer;
+}
+
+.month h1{
+  font-size: 3rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.2rem;
+  margin-bottom: 1rem;
+}
+
+.month p{
+  font-size: 1.6rem;
+}
+p {
+  font-size: 1.6rem;
+}
+
+.weekdays{
+  width:100%;
+  height: 5rem;
+  padding: 0 0.4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.weekdays div{
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: .1rem;
+  width: calc(100% /7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+/*   text-shadow: 0 0.3rem 0.5rem rgba(0,0,0,0.5rem); */
+}
+
+.days{
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+/*   padding: .2rem; */
+}
+
+.days div{
+  font-size: 1.4rem;
+/*   margin: .3rem; */
+  width: calc(100% /7);
+  height: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+/*   text-shadow: 0 0.3rem 0.5rem rgba(0,0,0,0.5); */
+  transition: background-color .2s;
+}
+
+.days div:hover:not(.today):not(.prev-date):not(.next-date){
+  background-color: #262626;
+  border: 0.2rem solid #BE202F;
+  cursor: pointer;
+}
+
+.prev-date,
+.next-date{
+  opacity: 0.5;
+}
+
+.today{
+  background-color: #BE202F;
+}
+
+.events-container{
+  width:100%;
+  height: 100%;
+/*   color: #eee; */
+/*   display: flex; */
+  justify-content: center;
+}
+
+.events-header{
+  color: #eee;
+  text-align: center;
+  width: 100%;
+  background-color: #BE202F;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+/*   badding-bottom: 2em; */
+
+}
+
+#header-placeholder {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+
+    height: 4rem;
+    width: 100%;
+    display:none;
+}
+
+.events-header h1{
+  font-size: 3rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.2rem;
+/*   text-shadow: 0 .3rem .5rem rgba(0,0,0,0.5); */
+}
+
+.event-list{
+  background-color: #222227;
+  display: flex;
+  justify-content: left;
+  border-spacing: 2em;
+}
+
+.event-type{
+  background-color: white;
+  width: .5em;
+}
+
+
+.title{
+  font-size: 3rem;
+}
+
+
+/* The sticky class is added to the header with JS when it reaches its scroll position */
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  max-width: 1000px;
+}
+</style>
+
+
+
+
+
+
+</head>
+
+<body translate="no" >
+  <div class="app">
+
+<div class="container">
+  <div class="calendar">
+    <div class="month">
+      <i class="fas fa-angle-left prev"></i>
+      <div class="date">
+        <h1></h1>
+        <p></p>
+      </div>
+      <i class="fas fa-angle-right next"></i>
+    </div>
+    <div class="weekdays">
+      <div>Sun</div>
+      <div>Mon</div>
+      <div>Tue</div>
+      <div>Wed</div>
+      <div>Thu</div>
+      <div>Fri</div>
+      <div>Sat</div>
+     </div>
+    <div class="days">
+
+    </div>
+  </div>
+
+</div>
+  <div id ="myHeader" class="events-header">
+  <h1>Events</h1>
+  <p></p>
+  </div>
+<div class="events-container">
+
+  <table class="event-list">
+    <tbody>
+      <tr class="event">
+        <td class="event-type">
+          <div> </div>
+        </td>
+        <td class="event-info">
+          <span class="title">Contemporary Worship Service</span>
+          <br>
+          <span>Welcome to worship -- this is a sample event description</span>
+          <br>
+          <span>9am-10am</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+
+
+      <script id="rendered-js" >
+var events = [];
+$.get( "api/data", function( data ) {
+  console.log(data);
+  events = data;
+$('document').ready(function(){
+
+  console.log("Page Loaded");
+  //get data
+
+});
+
+const date = new Date();
+
+const renderCalendar = () => {
+  console.log("Calendar Render");
+  date.setDate(1);
+  console.log(date);
+
+  const monthDays = document.querySelector(".days");
+
+  const lastDay = new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    0
+  ).getDate();
+
+  const prevLastDay = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    0
+  ).getDate();
+
+  const firstDayIndex = date.getDay();
+
+  const lastDayIndex = new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    0
+  ).getDay();
+
+  const nextDays = 7 - lastDayIndex - 1;
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  document.querySelector(".date h1").innerHTML = months[date.getMonth()];
+
+  document.querySelector(".date p").innerHTML = "Today: " + new Date().toDateString();
+
+  let days = "";
+
+  for (let x = firstDayIndex; x > 0; x--) {
+    days += `<div class="prev-date">${prevLastDay - x + 1}</div>`;
+  }
+
+  for (let i = 1; i <= lastDay; i++) {
+    if (i === new Date().getDate() && date.getMonth() === new Date().getMonth()) {
+      days += `<div class="today dview">${i}</div>`;
+      console.log("found current date: " + i );
+      //load events based on current date
+      loadEvents(i, date.getMonth() + 1, date.getFullYear());
+    } else {
+      console.log("adding day: " + i);
+      days += `<div class="dview">${i}</div>`;
+    }
+    monthDays.innerHTML = days;
+  }
+
+  for (let j = 1; j <= nextDays; j++) {
+    days += `<div class="next-date">${j}</div>`;
+    monthDays.innerHTML = days;
+  }
+};
+
+document.querySelector(".prev").addEventListener("click", () => {
+  date.setMonth(date.getMonth() - 1);
+  renderCalendar();
+});
+
+document.querySelector(".next").addEventListener("click", () => {
+  date.setMonth(date.getMonth() + 1);
+  renderCalendar();
+});
+
+renderCalendar();
+
+  });
+
+
+  function loadEvents(day, month, year){
+    console.log(day + "/" + month + "/" + year);
+    var eventDate = new Date(year, month - 1, day);
+    console.log(eventDate);
+    var eArr = findEvents(eventDate);
+
+    //clear events
+    $('.event-list').empty();
+    //append html event section
+    $('.event-list').html('<tbody class="events-table"></tbody>');
+
+
+    for(var i = 0; i < eArr.length; i++){
+      var startT = new Date(eArr[i].Event_Start_Date);
+      var endT = new Date(eArr[i].Event_End_Date);
+      $('.events-table').append('<tr class="event" id="event' + i + '"></tr>');
+      // $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].Event_Title + '</span><br><span>' + eArr[i].Meeting_Instructions + '</span><br><span>' + startT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + ' - ' + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + '</span></td>');
+      $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].Event_Title + '</span><br><span>' + nullFix(eArr[i].Meeting_Instructions) + '</span><br><span>' + eArr[i].est + '</span></td>');
+      // console.log("TZ Mods: " + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}));
+      // console.log("TZ No Mods: " + endT.toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"}));
+    }
+    console.log("events added");
+    console.log(eArr);
+  }
+
+  function timeParse(time){
+time = time.split(':'); // convert to array
+// fetch
+var hours = Number(time[0]);
+var minutes = Number(time[1]);
+
+// calculate
+var timeValue;
+
+if (hours > 0 && hours <= 12) {
+  timeValue= "" + hours;
+} else if (hours > 12) {
+  timeValue= "" + (hours - 12);
+} else if (hours == 0) {
+  timeValue= "12";
+}
+
+timeValue += (minutes < 10) ? ":0" + minutes : ":" + minutes;  // get minutes
+timeValue += (hours >= 12) ? "pm" : "am";  // get AM/PM
+return timeValue
+  }
+
+  function findEvents(eventDate){
+    var arr = [];
+    console.log(events.length);
+    for(var i = 0; i < events.length; i++){
+      var indexDate = new Date(events[i].Event_Start_Date);
+      //add date to events
+
+      if(indexDate.getMonth() === eventDate.getMonth() && indexDate.getDate() === eventDate.getDate() && indexDate.getFullYear() === eventDate.getFullYear()){
+        console.log("found event: " + events[i].Event_ID);
+        document.querySelector(".events-header p").innerHTML = "Selected: " + indexDate.toDateString();
+        arr.push(events[i]);
+      }
+    }
+    return arr;
+  }
+
+function nullFix(yeet){
+  if(!yeet){
+    yeet = "";
+  }
+
+  return yeet;
+}
+
+
+// When the user scrolls the page, execute myFunction
+// window.onscroll = function() {myFunction()};
+
+// Get the header
+var header =document.getElementById("myHeader");
+
+// Get the offset position of the navbar
+var sticky = header.offsetTop;
+
+// Add the sticky class to the header when you reach its scroll position. Remove "sticky" when you leave the scroll position
+// function myFunction() {
+//   if (window.pageYOffset > sticky) {
+//     header.classList.add("sticky");
+//     //$('#header-placeholder').css({display: 'block'});
+//   } else {
+//     header.classList.remove("sticky");
+//     //$('#header-placeholder').css({display: 'none'});
+//   }
+// }
+
+$(document).on('click', '.dview', function(){
+    var months = [ "January", "February", "March", "April", "May", "June",
+           "July", "August", "September", "October", "November", "December" ];
+    console.log("in .dview click");
+
+    var selectedMonthIndex = months.indexOf($('.date h1').text());
+    console.log(selectedMonthIndex);
+    // do something here
+    console.log("selected");
+    loadEvents($(this).text(), selectedMonthIndex + 1, $('.date p').text().substr($('.date p').text().length - 4));
+});
+
+$(document).on('click', '.prev-date', function(){
+  console.log("in .prev-date click");
+  $('.event-list').empty();
+  $('.events-header p').empty();
+});
+
+$(document).on('click', '.next-date', function(){
+  console.log("in .next-date click");
+  $('.event-list').empty();
+  $('.events-header p').empty();
+});
+
+$(document).on('click', '.date', function(){
+    window.location.replace("");
+});
+
+
+
+
+var dark = true;
+
+if(dark){
+  //Header stays red white text
+
+  //Calendar dark with white text
+  $('.calendar').css('background-color', "#222227");
+  $('.container').css('color', "white");
+  //Event header stays red white
+
+  //Event body white text white indicator
+  $('.events-container').css('color', "white");
+  $('.event-type').css('background-color', "white");
+} else {
+   //Header stays red white text
+
+  //Calendar dark with white text
+  $('.calendar').css('background-color', "white");
+  $('.container').css('color', '#222227')
+  //Event header stays red white
+
+  //Event body white text white indicator
+  $('.events-container').css('color', "#222227");
+  $('.event-type').css('background-color', "#222227");
+  $('.event-list').css('background-color', "white");
+}
+    </script>
+
+
+
+</body>
+
+</html>

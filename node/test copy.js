@@ -1,0 +1,315 @@
+//Event calendar for integrating with a Ministry Platform database 
+
+//INCLUDES + DIR
+require('dotenv').config();
+var express = require('express');
+var http = require('http');
+var _dirname = require('path').dirname(require.main.filename);
+var app = express();
+var server = http.Server(app);
+
+var bodyParser = require('body-parser');
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
+var randomToken = require('random-token');
+
+var MP = require("./mp-events.js");
+
+var fs = require('fs');
+
+var cal = "";
+app.use('/static', express.static(_dirname + "/static"));
+
+// var contacts = [];
+// var users = [];
+// var participants;
+// var households;
+// var addresses;
+// var final = [];
+// var final_sorted = [];
+// var SESSION_TIMEOUT = 900000; //15 minutes
+
+// var production = false;
+
+// //production flag
+// var myArgs = process.argv.slice(2);
+// // console.log('myArgs: ', myArgs);
+// if(myArgs[0] == "production")
+// production = true;
+
+// var ready = false;
+
+
+var test = new MP(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.ROOT);
+var events = [];
+
+//Default Server Config
+var WEB_TITLE = "Events";
+var ICS_ENABLED = true;
+var WEBHOOK_UPDATE = true;
+var SCHEDULED_UPDATE = true;
+var DEBUG_PORTAL = true;
+var LIGHT_THEME = {
+    "text": "#00000",
+    "background": "#00000",
+    "header": "#00000"
+};
+var DARK_THEME = {
+	"text": "#00000",
+	"background": "#00000",
+	"header": "#00000"
+}
+
+//socket io
+///sockets init
+const iot = require('socket.io')(server);
+////Socket Init////
+iot.on('connection', function(socket){
+  console.log('client connected');
+
+  socket.on('disconnect', function(){
+    console.log('client disconencted');
+  });
+});
+
+
+///HTTP client listen on 3000
+server.listen(3000, function(){
+	debug('listening on *:3000');
+	//configure server
+	configServer();
+	asyncEvents();
+	debug("Number of events loaded: " + events.length);
+});
+
+app.get("/api/ics", (req, res) => {
+	if(ICS_ENABLED){
+		res.set('Content-Type', 'text/calendar;charset=utf-8');
+		res.set('Content-Disposition', 'attachment; filename="afumc.ics"');
+		res.send(cal);
+	} else {
+		res.sendStatus(404);
+	}
+});
+
+app.get("/", (req, res) => {
+		res.sendFile(_dirname + "/html/events.html");
+});
+
+//wrap in rate limiter
+app.get("/api/data/config", (req, res) => {
+	res.send({"light_theme": LIGHT_THEME, "dark_theme": DARK_THEME});
+});
+
+//wrap in rate limiter
+app.get("/api/data", (req, res) => {
+	res.send(events);
+});
+
+app.get('/api/update', function(req, res){
+	if(WEBHOOK_UPDATE){
+		debug("update triggered");
+		res.send("Success!");
+		asyncEvents();
+	} else 
+	res.sendStatus(404);
+
+});
+
+app.get("/api/debug", (req, res) => {
+	if(DEBUG_PORTAL){
+		res.sendFile(_dirname + "/html/debug.html");
+	}
+});
+
+async function asyncEvents(){
+	var newE = [];
+	var nevents = await test.getEvents();
+	for (var x = 1; x < 12; x++){
+		var itt = 31 * x;
+
+		newE = await test.getEvents('DATEADD(mm%2C%200%2C%20DATEDIFF(mm%2C%20' + itt.toString() + '%2C%20Event_Start_Date))%20%3D%20DATEADD(mm%2C%200%2C%20DATEDIFF(mm%2C%200%2C%20GETDATE()))&%24orderby=Event_Start_Date');
+		for(var i = 0; i < newE.length; i++){
+			nevents.push(newE[i]);
+		}
+	}
+
+	events = visibilityFilter(nevents);
+	//set server time
+	ignoreTZ(events);
+	cal = newCreateICS(events);
+	debug("Events updated!");
+}
+
+function ignoreTZ(eventArr){
+	for(var i = 0; i < eventArr.length; i++){
+		var startT = new Date(eventArr[i].Event_Start_Date);
+		var endT = new Date(eventArr[i].Event_End_Date);
+		var est = timeParse(startT.getHours() + ":" + startT.getMinutes()) + " - " + timeParse(endT.getHours() + ":" + endT.getMinutes());
+		//insert key value pair
+		eventArr[i]["est"] = est;
+	}
+}
+
+function timeParse(time){
+	time = time.split(':'); // convert to array
+	// fetch
+	var hours = Number(time[0]);
+	var minutes = Number(time[1]);
+
+	// calculate
+	var timeValue;
+
+	if (hours > 0 && hours <= 12) {
+		timeValue= "" + hours;
+	} else if (hours > 12) {
+		timeValue= "" + (hours - 12);
+	} else if (hours == 0) {
+		timeValue= "12";
+	}
+
+	timeValue += (minutes < 10) ? ":0" + minutes : ":" + minutes;  // get minutes
+	timeValue += (hours >= 12) ? "pm" : "am";  // get AM/PM
+	return timeValue
+}
+
+function visibilityFilter(eventArr){
+	//find indexes of non public events
+	// debug(events[0].Visibility_Level_ID);
+	debug("eventArr length: " + eventArr.length);
+	debug(eventArr[0].Visibility_Level_ID);
+	var removeIndexes = [];
+	for(var i = 0; i < eventArr.length; i++){
+		if(eventArr[i].Visibility_Level_ID != 4){
+			debug("found");
+			removeIndexes.push(i);
+		}
+	}
+	debug(removeIndexes);
+
+	//remove all removeIndexes
+	for(var i = removeIndexes.length - 1; i >= 0; i--){
+		eventArr.splice(removeIndexes[i], 1);
+	}
+	debug(eventArr);
+	return eventArr;
+}
+
+function msToTime(duration) {
+	var milliseconds = parseInt((duration % 1000) / 100),
+	minutes1 = Math.floor((duration / (1000 * 60)) % 60),
+	hours1 = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+
+	return {hours: hours1, minutes: minutes1}
+}
+
+function newCreateICS(eventArr){
+	var icsFormat = '';
+	icsFormat += 'BEGIN:VCALENDAR\r\n';
+	icsFormat += 'VERSION:2.0\r\n';
+	icsFormat += 'CALSCALE:GREGORIAN\r\n';
+	icsFormat += 'PRODID:am/ics\r\n';
+	icsFormat += 'METHOD:PUBLISH\r\n';
+	// icsFormat += calName ? (foldLine(`X-WR-CALNAME:${calName}`) + '\r\n') : '';
+	icsFormat += `X-PUBLISHED-TTL:PT1H\r\n`;
+
+	//append events
+	for(var i = 0; i < eventArr.length; i++){
+		var icsEvent = '';
+		var duration = msToTime(new Date(eventArr[i].Event_End_Date).getTime() - new Date(eventArr[i].Event_Start_Date).getTime());
+		var minstruction = eventArr[i].Meeting_Instructions;
+		if(!minstruction){
+			minstruction = "";
+		}
+
+		icsEvent += 'BEGIN:VEVENT\r\n';
+		icsEvent += 'UID:' + eventArr[i].Event_ID + '\r\n';
+		icsEvent += 'SUMMARY:' + eventArr[i].Event_Title + '\r\n';
+		icsEvent += 'DTSTAMP:' + convertToICSDate(new Date)  + '\r\n';
+		icsEvent += 'DTSTART:' + convertToICSDate(new Date(eventArr[i].Event_Start_Date)) + '\r\n';
+		icsEvent += 'DESCRIPTION:' + minstruction.trim() + '\r\n';
+		if(duration.minutes == 0){
+			icsEvent += 'DURATION:PT' + duration.hours + 'H\r\n';
+		} else {
+			icsEvent += 'DURATION:PT' + duration.hours + 'H' + duration.minutes + 'M\r\n';
+		}
+		icsEvent += 'END:VEVENT\r\n';
+		icsFormat += icsEvent;
+	}
+
+	//end ical
+	icsFormat += 'END:VCALENDAR\r\n';
+
+	return icsFormat;
+}
+
+function convertToICSDate(dateT) {
+		//correct for EST offset
+		dateTime = new Date(dateT.valueOf() + 3600000 * 5);
+			 const year = dateTime.getFullYear().toString();
+			 const month = (dateTime.getMonth() + 1) < 10 ? "0" + (dateTime.getMonth() + 1).toString() : (dateTime.getMonth() + 1).toString();
+			 const day = dateTime.getDate() < 10 ? "0" + dateTime.getDate().toString() : dateTime.getDate().toString();
+			 const hours = dateTime.getHours() < 10 ? "0" + dateTime.getHours().toString() : dateTime.getHours().toString();
+			 const minutes = dateTime.getMinutes() < 10 ? "0" +dateTime.getMinutes().toString() : dateTime.getMinutes().toString();
+
+			 return year + month + day + "T" + hours + minutes + "00" + "Z";
+}
+
+function configServer(){
+	const config = JSON.parse(fs.readFileSync(_dirname + '/config.json', 'utf8'));
+	if(config){
+		if(config.title){
+			WEB_TITLE = config.title;
+		}
+		if(config.ics){
+			ICS_ENABLED = config.ics;
+		}
+		if(config.webhook_update){
+			WEBHOOK_UPDATE = config.webhook_update;
+		}
+		if(config.scheduled_update){
+			SCHEDULED_UPDATE = config.scheduled_update;
+		}
+		if(config.debug_portal){
+			DEBUG_PORTAL = config.debug_portal;
+		}
+		if(config.light_theme){
+			if(config.light_theme.text){
+				LIGHT_THEME.text = config.light_theme.text;
+			}
+			if(config.light_theme.background){
+				LIGHT_THEME.background = config.light_theme.background;
+			}
+			if(config.light_theme.header){
+				LIGHT_THEME.header = config.light_theme.header;
+			}
+		}
+		if(config.dark_theme){
+			if(config.dark_theme.text){
+				DARK_THEME.text = config.dark_theme.text;
+			}
+			if(config.dark_theme.background){
+				DARK_THEME.background = config.dark_theme.background;
+			}
+			if(config.dark_theme.header){
+				DARK_THEME.header = config.dark_theme.header;
+			}
+		}
+	}
+	ready = true;
+	return 0;
+}
+
+
+function debug(msg){
+	//console
+	console.log(msg);
+
+	//socket.io
+	iot.emit('debug', msg);
+
+	//fs
+	//not implemented yet
+}

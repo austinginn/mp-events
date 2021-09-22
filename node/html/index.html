@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+
+  <meta charset="UTF-8">
+   <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <title>client testing</title>
+
+</head>
+
+<body translate="no" >
+  <script >
+  //oauth
+  //redirect to MP for authentication
+  console.log("redirecting");
+  window.location.replace("https://afumc.ministryplatform.com/ministryplatformapi/oauth/connect/authorize?response_type=code&scope=openid%20http%3A%2F%2Fwww.thinkministry.com%2Fdataplatform%2Fscopes%2Fall%20openid&client_id=directory&redirect_uri=http%3A%2F%2F161.35.98.102%2Fapi%2Ftoken%2Fsend%2F");
+  </script>
+
+
+
+</body>
+
+</html>

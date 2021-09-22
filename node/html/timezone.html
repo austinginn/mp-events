@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+
+  <meta charset="UTF-8">
+   <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <title>client testing</title>
+
+</head>
+
+<body translate="no" >
+  <h1 id="tz"></h1>
+  <h1 id="t1"></h1>
+  <h1 id="t2"></h1>
+  <a href="events">Go Back</a>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+  <script >
+  //oauth
+  //redirect to MP for authentication
+  //TZ
+  var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  console.log(tz);
+  $("#tz").text(tz);
+
+  //Test #1
+  var dateT = new Date();
+  console.log("Test 1: " + dateT);
+  $("#t1").text(dateT);
+
+  //Test #2
+  var dateC = new Date("2021-01-26T13:00:00");
+  console.log("Test #2: " + dateC + " || " + dateC.getHours() + ":" + dateC.getMinutes());
+  $("#t2").text("Is 13:0 the same as " + dateC.getHours() + ":" + dateC.getMinutes());
+
+  //Test #3
+
+  </script>
+
+
+
+</body>
+
+</html>
