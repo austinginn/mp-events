@@ -1,7 +1,10 @@
 //Event calendar for integrating with a Ministry Platform database 
 
-//INCLUDES + DIR
+///////
 require('dotenv').config();
+///////
+
+//INCLUDES
 var express = require('express');
 var http = require('http');
 var _dirname = require('path').dirname(require.main.filename);
@@ -20,26 +23,6 @@ var fs = require('fs');
 
 var cal = "";
 app.use('/static', express.static(_dirname + "/static"));
-
-// var contacts = [];
-// var users = [];
-// var participants;
-// var households;
-// var addresses;
-// var final = [];
-// var final_sorted = [];
-// var SESSION_TIMEOUT = 900000; //15 minutes
-
-// var production = false;
-
-// //production flag
-// var myArgs = process.argv.slice(2);
-// // console.log('myArgs: ', myArgs);
-// if(myArgs[0] == "production")
-// production = true;
-
-// var ready = false;
-
 
 var test = new MP(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.ROOT);
 var events = [];
