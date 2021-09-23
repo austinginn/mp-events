@@ -1,0 +1,32 @@
+{
+  "name": "mp-events",
+  "version": "1.0.0",
+  "description": "Event calendar with Ministry Platform database integration",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/austinginn/mp-events.git"
+  },
+  "keywords": [
+    "ministry",
+    "platform",
+    "calendar",
+    "events"
+  ],
+  "author": "Austin Ginn <austinleeginn@gmail.com> (https://aginn.tech/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/austinginn/mp-events/issues"
+  },
+  "homepage": "https://github.com/austinginn/mp-events#readme",
+  "dependencies": {
+    "@kidkarolis/not-so-fast": "^1.0.1",
+    "dotenv": "^10.0.0",
+    "request": "^2.88.2",
+    "socket.io": "^4.2.0"
+  }
+}
