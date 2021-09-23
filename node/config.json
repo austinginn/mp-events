@@ -6,12 +6,12 @@
     "debug_portal": "true",
     "light_theme": {
         "text": "#00000",
-        "background": "#00000",
-        "header": "#00000"
+        "background": "#fff",
+        "header": "#024873"
     },
     "dark_theme": {
-        "text": "#00000",
-        "background": "#00000",
-        "header": "#00000"
+        "text": "#fff",
+        "background": "#000000",
+        "header": "#024873"
     }
 }

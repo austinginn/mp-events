@@ -8,13 +8,12 @@
 
 <link rel="apple-touch-icon" type="image/png" href="/static/am_favicon.png" />
 <link rel="shortcut icon" type="image/png" href="/static/am_favicon.png"/>
-<meta name="apple-mobile-web-app-title" content="AM Events">
+<meta name="apple-mobile-web-app-title" content="Events">
 
 
-  <title>AM Events</title>
+  <title id="title">AM Events</title>
       <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AM Events</title>
 
 
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css'>
@@ -22,6 +21,12 @@
 <style>
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,700);
 
+
+:root {
+  --text: #fff;
+  --accent: #fff;
+  --background: #fff;
+}
 
 *{
   margin: 0;
@@ -38,7 +43,8 @@ html{
 }
 
 body{
-  background-color: rgb(34, 34, 39);
+  background-color: var(--background);
+  color: var(--text);
 }
 
 ::-webkit-scrollbar {
@@ -72,7 +78,7 @@ body{
 .month{
   width: 100%;
   height: 8rem;
-  background-color: #BE202F;
+  background-color: var(--accent);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -141,8 +147,8 @@ p {
 }
 
 .days div:hover:not(.today):not(.prev-date):not(.next-date){
-  background-color: #262626;
-  border: 0.2rem solid #BE202F;
+  background-color: var(--background);
+  border: 0.2rem solid var(--accent);
   cursor: pointer;
 }
 
@@ -152,7 +158,7 @@ p {
 }
 
 .today{
-  background-color: #BE202F;
+  background-color: var(--accent);
 }
 
 .events-container{
@@ -164,10 +170,10 @@ p {
 }
 
 .events-header{
-  color: #eee;
+  color: var(--text);
   text-align: center;
   width: 100%;
-  background-color: #BE202F;
+  background-color: var(--accent);
   padding-top: 2rem;
   padding-bottom: 2rem;
 /*   badding-bottom: 2em; */
@@ -192,7 +198,7 @@ p {
 }
 
 .event-list{
-  background-color: #222227;
+  background-color: var(--background);
   display: flex;
   justify-content: left;
   border-spacing: 2em;
@@ -283,6 +289,8 @@ p {
 
       <script id="rendered-js" >
 var events = [];
+var config;
+const rootEl = document.querySelector(':root');
 $.get( "api/data", function( data ) {
   console.log(data);
   events = data;
@@ -290,6 +298,40 @@ $('document').ready(function(){
 
   console.log("Page Loaded");
   //get data
+
+});
+
+//listen for theme change
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    const newColorScheme = e.matches ? "dark" : "light";
+    if(newColorScheme == "dark"){
+      rootEl.style.setProperty('--text', config.dark_theme.text);
+      rootEl.style.setProperty('--accent', config.dark_theme.header);
+      rootEl.style.setProperty('--background', config.dark_theme.background);
+    } else {
+      rootEl.style.setProperty('--text', config.light_theme.text);
+      rootEl.style.setProperty('--accent', config.light_theme.header);
+      rootEl.style.setProperty('--background', config.light_theme.background);
+    }
+});
+
+$.get( "api/data/config", function(data){
+  console.log(data);
+  config = data;
+  $("#title").text(config.title);
+
+    //set colors
+    
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    // dark mode
+    rootEl.style.setProperty('--text', config.dark_theme.text);
+    rootEl.style.setProperty('--accent', config.dark_theme.header);
+    rootEl.style.setProperty('--background', config.dark_theme.background);
+    } else {
+      rootEl.style.setProperty('--text', config.light_theme.text);
+      rootEl.style.setProperty('--accent', config.light_theme.header);
+      rootEl.style.setProperty('--background', config.light_theme.background);
+    }
 
 });
 
@@ -506,32 +548,32 @@ $(document).on('click', '.date', function(){
 
 
 
-var dark = true;
+// var dark = true;
 
-if(dark){
-  //Header stays red white text
+// if(dark){
+//   //Header stays red white text
 
-  //Calendar dark with white text
-  $('.calendar').css('background-color', "#222227");
-  $('.container').css('color', "white");
-  //Event header stays red white
+//   //Calendar dark with white text
+//   $('.calendar').css('background-color', "#222227");
+//   $('.container').css('color', "white");
+//   //Event header stays red white
 
-  //Event body white text white indicator
-  $('.events-container').css('color', "white");
-  $('.event-type').css('background-color', "white");
-} else {
-   //Header stays red white text
+//   //Event body white text white indicator
+//   $('.events-container').css('color', "white");
+//   $('.event-type').css('background-color', "white");
+// } else {
+//    //Header stays red white text
 
-  //Calendar dark with white text
-  $('.calendar').css('background-color', "white");
-  $('.container').css('color', '#222227')
-  //Event header stays red white
+//   //Calendar dark with white text
+//   $('.calendar').css('background-color', "white");
+//   $('.container').css('color', '#222227')
+//   //Event header stays red white
 
-  //Event body white text white indicator
-  $('.events-container').css('color', "#222227");
-  $('.event-type').css('background-color', "#222227");
-  $('.event-list').css('background-color', "white");
-}
+//   //Event body white text white indicator
+//   $('.events-container').css('color', "#222227");
+//   $('.event-type').css('background-color', "#222227");
+//   $('.event-list').css('background-color', "white");
+// }
     </script>
 
 

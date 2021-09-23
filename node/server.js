@@ -1,4 +1,10 @@
 //Event calendar for integrating with a Ministry Platform database 
+//TODO
+//Add debug portal login and security
+//favicon upload in debug portal
+//reformat html and get config data to dynamically set colors etc
+//add load on html
+//add nodemailer integration for debug as option
 
 ///////
 require('dotenv').config();
@@ -8,6 +14,7 @@ require('dotenv').config();
 var express = require('express');
 var http = require('http');
 var _dirname = require('path').dirname(require.main.filename);
+// const nodemailer = require("nodemailer");
 var app = express();
 app.use('/static', express.static(_dirname + "/static"));
 
@@ -41,13 +48,13 @@ var SCHEDULED_UPDATE = true;
 var DEBUG_PORTAL = true;
 var LIGHT_THEME = {
     "text": "#00000",
-    "background": "#00000",
-    "header": "#00000"
+    "background": "#fff",
+    "header": "#024873"
 };
 var DARK_THEME = {
-	"text": "#00000",
-	"background": "#00000",
-	"header": "#00000"
+	"text": "#fff",
+	"background": "#000",
+	"header": "#024873"
 }
 
 //socket io
@@ -68,11 +75,13 @@ server.listen(3000, function(){
 	debug('listening on *:3000');
 	//configure server
 	configServer();
+	
+	//if scheduled update -- 24hr timer
 	asyncEvents();
 	debug("Number of events loaded: " + events.length);
 });
 
-app.get("/api/ics", (req, res) => {
+app.get("/api/ics", (req, res) => { 
 	if(ICS_ENABLED){
 		res.set('Content-Type', 'text/calendar;charset=utf-8');
 		res.set('Content-Disposition', 'attachment; filename="afumc.ics"');
@@ -88,7 +97,7 @@ app.get("/", (req, res) => {
 
 //wrap in rate limiter
 app.get("/api/data/config", (req, res) => {
-	res.send({"light_theme": LIGHT_THEME, "dark_theme": DARK_THEME});
+	res.send({"title": WEB_TITLE, "light_theme": LIGHT_THEME, "dark_theme": DARK_THEME});
 });
 
 //wrap in rate limiter
