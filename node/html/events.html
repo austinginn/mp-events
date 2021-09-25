@@ -238,11 +238,12 @@
     }
 
     .blur {
-      filter: blur(5px);
-      -webkit-filter: blur(5px);
+      filter: blur(5px) brightness(50%);
+      transition: .3s ease;
+      /* -webkit-filter: blur(5px);
       -moz-filter: blur(5px);
       -o-filter: blur(5px);
-      -ms-filter: blur(5px);
+      -ms-filter: blur(5px); */
     }
 
     #search {
@@ -667,7 +668,9 @@ input[type="search"]::-webkit-search-results-decoration {
 
     });
 
-    $(document).on('click', '.search', function () {
+    $(document).on('click', '.search', function (event) {
+      console.log("in search click");
+      event.stopPropagation();
       if (!searching) {
         searching = true;
         $(".app").addClass("blur");
@@ -682,16 +685,33 @@ input[type="search"]::-webkit-search-results-decoration {
     //   }
     // });
 
-    // $(document).on('click', '.app', function (e){
-    //   if(searching){
-    //     searching = false;
-    //     $(".app").removeClass("blur");
-    //     $("#search").addClass("hidden");
-    //     $(".search-input").focusout();
-    //   }
-    // });
+    $(document).on('click', 'html', function (e){
+      console.log("in body click");
+      if(searching){
+        searching = false;
+        $(".app").removeClass("blur");
+        $("#search").addClass("hidden");
+        $(".search-input").focusout();
+      }
+    });
 
+    $(".search-form").on('submit', function(e){
+      e.preventDefault();
+      console.log("searching for " + $(".search-input").val());
+      //find
+      find_events($(".search-input").val());
+    });
 
+    function find_events(term){
+      console.log(term);
+      let search_results = []
+      for(let i = 0; i < events.length -1; i++){
+        if(events[i].Event_Title.toLowerCase().includes(term.toLowerCase())){
+          search_results.push(events[i]);
+        }
+      }
+      console.log(search_results);
+    }
 
   </script>
 
