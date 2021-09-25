@@ -679,6 +679,13 @@ input[type="search"]::-webkit-search-results-decoration {
       }
     });
 
+    $(document).on('click', '.search-input', function (event) {
+      console.log("in search-input click");
+      if (searching) {
+        event.stopPropagation();
+      }
+    });
+
     // $(document).on('click', '#search', function (e){
     //   if(searching){
     //     e.stopPropagation();
@@ -706,7 +713,7 @@ input[type="search"]::-webkit-search-results-decoration {
       console.log(term);
       let search_results = []
       for(let i = 0; i < events.length -1; i++){
-        if(events[i].Event_Title.toLowerCase().includes(term.toLowerCase())){
+        if(events[i].Event_Title.toLowerCase().includes(term.toLowerCase()) || nullFix(events[i].Meeting_Instructions).toLowerCase().includes(term.toLowerCase())){
           search_results.push(events[i]);
         }
       }
