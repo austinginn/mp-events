@@ -5,13 +5,13 @@
     "scheduled_update": "true",
     "debug_portal": "true",
     "light_theme": {
-        "text": "#00000",
-        "background": "#fff",
-        "header": "#024873"
+        "text": "#111118",
+        "background": "#f9f4f1",
+        "header": "#cc5a71"
     },
     "dark_theme": {
-        "text": "#fff",
-        "background": "#000000",
-        "header": "#024873"
+        "text": "#f9f4f1",
+        "background": "#222230",
+        "header": "#cc5a71"
     }
 }
