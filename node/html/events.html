@@ -958,8 +958,12 @@ input[type="search"]::-webkit-search-results-decoration {
         console.log(search_results[i]);
         // console.log(search_results[i].Event_Start_Date);
         let eventDate = new Date(search_results[i].Event_Start_Date);
-        if(currentDate.getMonth() == eventDate.getMonth() && currentDate.getDate() <= eventDate.getDate()){
-          flag = true
+        // if(currentDate.getMonth() == eventDate.getMonth() && currentDate.getDate() <= eventDate.getDate()){
+        //   flag = true;
+        //   startIndex = i;
+        // }
+        if(currentDate <= eventDate){
+          flag = true;
           startIndex = i;
         }
       }
