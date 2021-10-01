@@ -7,7 +7,6 @@
 
   <link rel="apple-touch-icon" type="image/png" href="/static/favicon.png" />
   <link rel="shortcut icon" type="image/png" href="/static/favicon.png" />
-  <meta name="apple-mobile-web-app-title" content="Events">
 
 
   <title id="title">Events</title>
@@ -74,6 +73,7 @@
       /*   height: 50%; */
       /*   background-color: #222227; */
       /* box-shadow: 0 0.5rem 3rem rgba(0,0,0, 0.4); */
+      background-color: var(--background);
     }
 
     .month {
@@ -169,6 +169,11 @@
       /*   color: #eee; */
       /*   display: flex; */
       justify-content: center;
+      cursor: pointer;
+    }
+
+    .event-info {
+      font-size: 1.5rem;
     }
 
     .events-header {
@@ -181,6 +186,8 @@
       /*   badding-bottom: 2em; */
 
     }
+    
+
 
     #header-placeholder {
       padding-top: 2rem;
@@ -201,15 +208,27 @@
 
     .event-list {
       background-color: var(--background);
+      width: 100%;
       display: flex;
       justify-content: left;
       border-spacing: 2em;
     }
 
+    .event {
+      width: 100%;
+    }
+
+
     .event-type {
       background-color: var(--text);
       width: .5em;
     }
+  
+    /* .event:hover td.event-type{
+      background-color: var(--accent);
+      padding: 10px;
+    } */
+
 
 
     .title {
@@ -229,12 +248,23 @@
       opacity: 0;
     }
 
+    .display-none{
+      display: none;
+    }
+
     .search {
       position: fixed;
       bottom: 15px;
       right: 15px;
       color: var(--text);
-      font-size: 2rem;
+      font-size: 2.5rem;
+    }
+    .back {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      color: var(--text);
+      font-size: 2.5rem;
     }
 
     .blur {
@@ -255,6 +285,19 @@
       z-index: 99;
     }
 
+    #add-event {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      padding: 10px;
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      z-index: 99;
+      background-color: var(--background);
+      border-radius: 10px;
+    }
+
+
     .search-form {
       position: relative;
       top: 50%;
@@ -267,6 +310,29 @@
       background: var(--background);
       transition: all 0.3s ease;
     }
+
+    .email-form {
+      position: relative;
+      top: 50%;
+      left: 50%;
+      width: 300px;
+      height: 40px;
+      border-radius: 40px;
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+      transform: translate(-50%, -50%);
+      background: var(--background);
+      transition: all 0.3s ease;
+    }
+    
+    #events-table {
+      width: 100%;
+      display: table;
+    }
+
+    #events-table-results{
+      width: 100%;
+    }
+
 
     .search-input {
       position: absolute;
@@ -290,6 +356,55 @@
   transform: translateY(-50%);
   padding: 13px 15px 13px 11px;
 }
+
+  .add {
+    font-size: 2rem;
+    float: right;
+  /* top: 50%;
+  left: 0; */
+  right: 0px;
+  transform: translateY(-100%);
+  /* padding: 13px 15px 13px 11px; */
+
+  }
+  
+  #email-heading {
+    padding-bottom: 35px;
+    text-align: center;
+  }
+
+  /* #add-event {
+      position: absolute;
+      background-color: var(--background);
+      border-radius: 40px;
+      padding: 20px;
+      left: 50%;
+      top: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      z-index: 99;
+    } */
+    .tip{
+      font-size: 1.5rem;
+    }
+
+    .text-align-center{
+      text-align: center;
+    }
+
+    .email-input {
+      position: absolute;
+      top: 10px;
+      font-size: 2rem;
+      background: none;
+      color: var(--text);
+      width: 300px;
+      height: 20px;
+      border: none;
+      appearance: none;
+      outline: none;
+      text-align: center;
+    }
 
 input[type="search"]::-webkit-search-decoration,
 input[type="search"]::-webkit-search-cancel-button,
@@ -320,17 +435,37 @@ input[type="search"]::-webkit-search-results-decoration {
 
 </head>
 
-<body translate="no" class=hidden>
-  <div id="search" class=hidden>
+<body translate="no" class="hidden"><a href="#top"></a>
+  <div id="search" class="hidden display-none">
     <form class="search-form">
       <i class="icon fa fa-search"></i>
       <input type="search" value="" placeholder="Search" class="search-input">
     </form>
   </div>
 
+  <div id="add-event" class="hidden display-none">
+    <h1 id="email-heading">Enter your email and we will send you a calendar invite.</h1>
+    <form class="email-form">
+      <i class="icon fa fa-envelope"></i>
+      <input type="email" value="" placeholder="email" class="email-input">
+    </form>
+  </div>
   <div class="app">
+
+    <div id="results" class="events-container display-none">
+       
+      <div id="myHeader-results" class="events-header">
+        <h1>Results</h1>
+        <p></p>
+      </div>
+      <table id="event-list-results" class="event-list">
+
+      </table>
+    </div>
     
     <div class="container">
+
+
       
       <div class="calendar">
         <div class="month">
@@ -360,9 +495,9 @@ input[type="search"]::-webkit-search-results-decoration {
       <h1>Events</h1>
       <p></p>
     </div>
-    <div class="events-container">
+    <div id="events-container" class="events-container">
 
-      <table class="event-list">
+      <table id="event-list" class="event-list">
         <tbody>
           <tr class="event">
             <td class="event-type">
@@ -381,6 +516,7 @@ input[type="search"]::-webkit-search-results-decoration {
 
     </div>
     <span class="fas fa-search search"></span>
+    <span class="fas fa-times-circle back display-none"></span>
   </div>
 
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
@@ -390,6 +526,7 @@ input[type="search"]::-webkit-search-results-decoration {
 
     //globals
     var events = [];
+    var selected = "";
     var config;
     const rootEl = document.querySelector(':root');
     var loaded = { "themes": false, "events": false };
@@ -542,15 +679,15 @@ input[type="search"]::-webkit-search-results-decoration {
       var eArr = findEvents(eventDate);
 
       //clear events
-      $('.event-list').empty();
+      $('#event-list').empty();
       //append html event section
-      $('.event-list').html('<tbody class="events-table"></tbody>');
+      $('#event-list').html('<tbody id="events-table" class="events-table"></tbody>');
 
 
       for (var i = 0; i < eArr.length; i++) {
         var startT = new Date(eArr[i].Event_Start_Date);
         var endT = new Date(eArr[i].Event_End_Date);
-        $('.events-table').append('<tr class="event" id="event' + i + '"></tr>');
+        $('#events-table').append('<tr class="event" id="event' + i + '" data-eid="' + eArr[i].Event_ID + '"></tr>');
         // $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].Event_Title + '</span><br><span>' + eArr[i].Meeting_Instructions + '</span><br><span>' + startT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + ' - ' + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + '</span></td>');
         $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].Event_Title + '</span><br><span>' + nullFix(eArr[i].Meeting_Instructions) + '</span><br><span>' + eArr[i].est + '</span></td>');
         // console.log("TZ Mods: " + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}));
@@ -558,6 +695,49 @@ input[type="search"]::-webkit-search-results-decoration {
       }
       console.log("events added");
       console.log(eArr);
+    }
+
+    function loadFoundEvents(results) {
+      const months = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+      //clear events
+      $('#event-list-results').empty();
+      //append html event section
+      $('#event-list-results').html('<tbody id="events-table-results" class="events-table"></tbody>');
+
+
+      for (var i = 0; i < results.length; i++) {
+        var startT = new Date(results[i].Event_Start_Date);
+        var endT = new Date(results[i].Event_End_Date);
+        $('#events-table-results').append('<tr class="event" id="event' + i + '"></tr>');
+        // $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].Event_Title + '</span><br><span>' + eArr[i].Meeting_Instructions + '</span><br><span>' + startT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + ' - ' + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + '</span></td>');
+        $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + results[i].Event_Title + '</span><br><span>' + nullFix(results[i].Meeting_Instructions) + '</span><br><span>' + startT.toDateString() + '</span><br><span>' + results[i].est + '</span></td>');
+        // console.log("TZ Mods: " + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}));
+        // console.log("TZ No Mods: " + endT.toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"}));
+      }
+      $(".container").addClass("display-none");
+      $("#myHeader").addClass("display-none");
+      $("#events-container").addClass("display-none");
+      $("#results").removeClass("display-none");
+      $(".back").removeClass("display-none");
+      $(".search").addClass("display-none");
+
+      window.scrollTo(0, 0);
+
+      console.log("events added");
+      // console.log(eArr);
     }
 
     function timeParse(time) {
@@ -591,7 +771,7 @@ input[type="search"]::-webkit-search-results-decoration {
 
         if (indexDate.getMonth() === eventDate.getMonth() && indexDate.getDate() === eventDate.getDate() && indexDate.getFullYear() === eventDate.getFullYear()) {
           console.log("found event: " + events[i].Event_ID);
-          document.querySelector(".events-header p").innerHTML = "Selected: " + indexDate.toDateString();
+          document.querySelector("#myHeader p").innerHTML = "Selected: " + indexDate.toDateString();
           arr.push(events[i]);
         }
       }
@@ -619,6 +799,11 @@ input[type="search"]::-webkit-search-results-decoration {
         console.log("loaded");
         $("body").removeClass("hidden");
       }
+    }
+
+    //generate ics for event
+    function createICS(){
+      
     }
 
     // Get the header
@@ -668,37 +853,74 @@ input[type="search"]::-webkit-search-results-decoration {
 
     });
 
-    $(document).on('click', '.search', function (event) {
-      console.log("in search click");
+    $(document).on('click', '.event', function (event) {
       event.stopPropagation();
+      if(!searching){
+        searching = true;
+        console.log(event);
+        $(".app").addClass("blur");
+        $("#add-event").removeClass("hidden display-none");
+        $(".email-input").focus();
+        selected = $(this).data("eid");
+        console.log($(this).data("eid"));
+      }
+
+    });
+
+    $(document).on('click', '.search', function (event) {
+      event.stopPropagation();
+      console.log("in search click");
+
       if (!searching) {
         searching = true;
         $(".app").addClass("blur");
-        $("#search").removeClass("hidden");
+        $("#search").removeClass("hidden display-none");
         $(".search-input").focus();
       }
     });
 
-    $(document).on('click', '.search-input', function (event) {
-      console.log("in search-input click");
-      if (searching) {
+    $(document).on('click', '.search-form', function (event) {
+      if(searching) {
         event.stopPropagation();
+        console.log("in search-form click");
       }
     });
 
-    // $(document).on('click', '#search', function (e){
-    //   if(searching){
-    //     e.stopPropagation();
-    //   }
-    // });
+    $(document).on('click', '.email-input', function (event) {
+      if(searching) {
+        event.stopPropagation();
+        console.log("in email-input click");
+      }
+    });
+
+    $(document).on('click', '.search-input', function (event){
+      if(searching){
+        event.stopPropagation();
+        console.log("in search-input click");
+      }
+    });
+
+    $(document).on('click', ".back", function(e){
+      event.stopPropagation();
+      $(".container").removeClass("display-none");
+      $("#myHeader").removeClass("display-none");
+      $("#events-container").removeClass("display-none");
+      $("#results").addClass("display-none");
+      $(".back").addClass("display-none");
+      $(".search").removeClass("display-none");
+
+      window.scrollTo(0, 0);
+    });
 
     $(document).on('click', 'html', function (e){
       console.log("in body click");
       if(searching){
         searching = false;
         $(".app").removeClass("blur");
-        $("#search").addClass("hidden");
-        $(".search-input").focusout();
+        $("#search").addClass("hidden display-none");
+        $("#add-event").addClass("hidden display-none")
+        $(".search-input").blur();
+        $(".email-input").blur();
       }
     });
 
@@ -707,17 +929,49 @@ input[type="search"]::-webkit-search-results-decoration {
       console.log("searching for " + $(".search-input").val());
       //find
       find_events($(".search-input").val());
+      $("html").trigger("click");
     });
+
+    $(".email-form").on('submit', function(e){
+      e.preventDefault();
+      console.log("sending invite link to " + $(".email-input").val());
+      //find
+      send_email($(".email-input").val(), selected);
+      $("html").trigger("click");
+    });
+
+    $(".event").hover(console.log(this));
 
     function find_events(term){
       console.log(term);
       let search_results = []
-      for(let i = 0; i < events.length -1; i++){
+      for(let i = 0; i < events.length; i++){
         if(events[i].Event_Title.toLowerCase().includes(term.toLowerCase()) || nullFix(events[i].Meeting_Instructions).toLowerCase().includes(term.toLowerCase())){
           search_results.push(events[i]);
         }
       }
-      console.log(search_results);
+      //proccess results
+      let flag = false
+      let startIndex = 0;
+      let currentDate = new Date();
+      for(let i = 0; i < search_results.length && !flag; i++){
+        console.log(search_results[i]);
+        // console.log(search_results[i].Event_Start_Date);
+        let eventDate = new Date(search_results[i].Event_Start_Date);
+        if(currentDate.getMonth() == eventDate.getMonth() && currentDate.getDate() <= eventDate.getDate()){
+          flag = true
+          startIndex = i;
+        }
+      }
+      final_search_results = search_results.slice(startIndex);
+      console.log(final_search_results);
+      loadFoundEvents(final_search_results);
+    }
+
+    //make this post
+    function send_email(email, eid){
+          //load server config
+      $.post( "/api/send", { email: email, eid: eid } );
     }
 
   </script>

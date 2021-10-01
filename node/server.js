@@ -1,31 +1,39 @@
 //Event calendar for integrating with a Ministry Platform database 
 //TODO
-//Add debug portal login and security
-//favicon upload in debug portal
-//reformat html and get config data to dynamically set colors etc
-//add load on html
-//add nodemailer integration for debug as option
+//Debug
+///Add debug portal login and security
+///favicon upload in debug portal
+//Nodemailer
+//Event Search
+///show events after search
+//PWA
+///local storage for events
+///Online / Offline icon
+///all other icon stuff
+//Add event
 
 ///////
 require('dotenv').config();
 ///////
 
 //INCLUDES
-var express = require('express');
-var http = require('http');
-var _dirname = require('path').dirname(require.main.filename);
+const express = require('express');
+const http = require('http');
+const _dirname = require('path').dirname(require.main.filename);
 // const nodemailer = require("nodemailer");
-var app = express();
+const app = express();
+const nodemailer = require("nodemailer");
 app.use('/static', express.static(_dirname + "/static"));
 
 
-var server = http.Server(app);
-var FastRateLimit = require("@kidkarolis/not-so-fast");
-var bodyParser = require('body-parser');
+const server = http.Server(app);
+const FastRateLimit = require("@kidkarolis/not-so-fast");
+const bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-var MP = require("./mp-events.js");
-var fs = require('fs');
+const MP = require("./mp-events.js");
+const fs = require('fs');
+const Mail = require('nodemailer/lib/mailer');
 
 
 
@@ -73,6 +81,7 @@ iot.on('connection', function(socket){
 ///HTTP client listen on 3000
 server.listen(3000, function(){
 	debug('listening on *:3000');
+	// main().catch(console.error);
 	//configure server
 	configServer();
 	
@@ -115,6 +124,40 @@ app.get("/api/data", (req, res) => {
     	//res.send({"result": "failed", "reason": "rate limit", "data": ""});
 	});
 });
+
+//post
+//wrap in rate limiter
+app.post("/api/send", (req, res) => {
+	console.log(req.body);
+		//token consumed
+		//okay to send
+		//add email to list
+		//do we need to make people confirm there email here?
+		let f_event;
+		let found = false;
+		for(let i = 0; i < events.length && !found; i++){
+			if(events[i].Event_ID == req.body.eid){
+				f_event = events[i];
+				found = true;
+				console.log(events[i]);
+			}
+		}
+
+		if(found){
+			main(req.body.email, f_event, () => {
+				res.send({"result": "success"});
+				return 0;
+			}).catch(() => {
+				console.error;
+				res.send({"result": "failed", "reason": "unable to send -- failed sending email", "data": ""});
+				return -1;
+			});
+		} else {
+			res.send({"result": "failed", "reason": "unable to send -- could not find event", "data": ""});
+			return -1;
+		}
+});
+
 
 app.get('/api/update', function(req, res){
 	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
@@ -196,17 +239,17 @@ function visibilityFilter(eventArr){
 	var removeIndexes = [];
 	for(var i = 0; i < eventArr.length; i++){
 		if(eventArr[i].Visibility_Level_ID != 4){
-			debug("found");
+			// debug("found");
 			removeIndexes.push(i);
 		}
 	}
-	debug(removeIndexes);
+	// debug(removeIndexes);
 
 	//remove all removeIndexes
 	for(var i = removeIndexes.length - 1; i >= 0; i--){
 		eventArr.splice(removeIndexes[i], 1);
 	}
-	debug(eventArr);
+	// debug(eventArr);
 	return eventArr;
 }
 
@@ -254,6 +297,43 @@ function newCreateICS(eventArr){
 	}
 
 	//end ical
+	icsFormat += 'END:VCALENDAR\r\n';
+
+	return icsFormat;
+}
+
+function createICSEvent(event){
+	//ics header
+	var icsFormat = '';
+	icsFormat += 'BEGIN:VCALENDAR\r\n';
+	icsFormat += 'VERSION:2.0\r\n';
+	icsFormat += 'PRODID:am/ics\r\n';
+	icsFormat += 'METHOD:PUBLISH\r\n';
+
+	//event info
+	var icsEvent = '';
+		var duration = msToTime(new Date(event.Event_End_Date).getTime() - new Date(event.Event_Start_Date).getTime());
+		var minstruction = event.Meeting_Instructions;
+		if(!minstruction){
+			minstruction = "";
+		}
+
+	icsEvent += 'BEGIN:VEVENT\r\n';
+	icsEvent += 'UID:' + event.Event_ID + '\r\n';
+	icsEvent += 'SUMMARY:' + event.Event_Title + '\r\n';
+	icsEvent += 'DTSTAMP:' + convertToICSDate(new Date)  + '\r\n';
+	icsEvent += 'DTSTART:' + convertToICSDate(new Date(event.Event_Start_Date)) + '\r\n';
+	icsEvent += 'DESCRIPTION:' + minstruction.trim() + '\r\n';
+
+	if(duration.minutes == 0){
+		icsEvent += 'DURATION:PT' + duration.hours + 'H\r\n';
+	} else {
+		icsEvent += 'DURATION:PT' + duration.hours + 'H' + duration.minutes + 'M\r\n';
+	}
+	icsEvent += 'END:VEVENT\r\n';
+	icsFormat += icsEvent;
+
+	//end ics
 	icsFormat += 'END:VCALENDAR\r\n';
 
 	return icsFormat;
@@ -343,3 +423,63 @@ function debug(msg){
 	//fs
 	//not implemented yet
 }
+
+
+//YEET some mail
+// async..await is not allowed in global scope, must use a wrapper
+async function main(rec, event, callback) {
+	// Generate test SMTP service account from ethereal.email
+	// Only needed if you don't have a real mail account for testing
+	// let testAccount = await nodemailer.createTestAccount();
+	let sDate = new Date(event.Event_Start_Date);
+	let eDate = new Date(event.Event_End_Date);
+	//correct month
+	let sDateMonth = sDate.getMonth() + 1;
+	let eDateMonth = eDate.getMonth() + 1;
+	//correct day
+	const dow = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+	
+	// create reusable transporter object using the default SMTP transport
+	let transporter = nodemailer.createTransport({
+	  host: process.env.EMAIL_HOST,
+	  port: process.env.EMAIL_PORT,
+	  secure: toB(process.env.EMAIL_SECURE), // true for 465, false for other ports
+	  auth: {
+		user: process.env.EMAIL_USER, // generated ethereal user
+		pass: process.env.EMAIL_SECRET, // generated ethereal password
+	  },
+	});
+  
+	// send mail with defined transport object
+	let info = await transporter.sendMail({
+	  from: '"YEET 👻" <aginn@afumc.org>', // sender address
+	  to: rec, // list of receivers
+	  subject: "🗓 Add " + event.Event_Title + " to your calendar", // Subject line
+	  text: "Hello! Here is the calendar event you requested: \r\n\r\n" + event.Event_Title + "\r\n" + event.Meeting_Instructions + 
+	  	"\r\n" + dow[sDate.getDay()+1] + ", " + sDateMonth + "-" + sDate.getDate() + "-" + sDate.getFullYear() + " to " +
+		  dow[eDate.getDay()+1] + ", " + eDateMonth + "-" + eDate.getDate() + "-" + eDate.getFullYear() +
+		  "\r\n" + event.est + 
+		  "\r\n\r\nIf you email client does not prompt you to add the event to your calendar, open the attached .ics file." +
+		  "\r\n\r\nThank you,\r\nAlpharetta Methodist", // plain text body
+	  icalEvent: {
+		  filename: event.Event_Title + ".ics",
+		  method: 'publish',
+		  content: createICSEvent(event)
+	  }
+	});
+  
+	console.log("Message sent: %s", info.messageId);
+	callback();
+	// Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+  
+	// Preview only available when sending through an Ethereal account
+	// console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+	// Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+  }
+
+  function toB(str){
+	  if(str == "true"){
+		  return true;
+	  }
+	  return false;
+  }

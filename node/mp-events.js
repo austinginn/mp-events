@@ -73,7 +73,7 @@ var MP = function()
 
     //public methods
   this.getEvents = async function(filter){
-    console.log("in get events");
+    // console.log("in get events");
     var events;
     //get authorize
     await getAuth();
