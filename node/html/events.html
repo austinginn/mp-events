@@ -258,6 +258,7 @@
       right: 15px;
       color: var(--text);
       font-size: 2.5rem;
+      cursor: pointer;
     }
     .back {
       position: fixed;
@@ -265,6 +266,7 @@
       right: 20px;
       color: var(--text);
       font-size: 2.5rem;
+      cursor: pointer;
     }
 
     .blur {
@@ -525,6 +527,7 @@ input[type="search"]::-webkit-search-results-decoration {
   <script id="rendered-js">
 
     //globals
+    let myStorage = window.localStorage;
     var events = [];
     var selected = "";
     var config;
@@ -536,6 +539,7 @@ input[type="search"]::-webkit-search-results-decoration {
     $.get("api/data/config", function (data) {
       console.log(data);
       config = data;
+      myStorage.setItem('config', data);
       $("#title").text(config.title);
 
       //set colors
@@ -573,6 +577,7 @@ input[type="search"]::-webkit-search-results-decoration {
     $.get("api/data", function (data) {
       console.log(data);
       events = data;
+      myStorage.setItem('events', data);
       // $('document').ready(function () {
 
       //   console.log("Page Loaded");
@@ -854,15 +859,19 @@ input[type="search"]::-webkit-search-results-decoration {
     });
 
     $(document).on('click', '.event', function (event) {
-      event.stopPropagation();
+      
       if(!searching){
-        searching = true;
+        event.stopPropagation();
         console.log(event);
-        $(".app").addClass("blur");
-        $("#add-event").removeClass("hidden display-none");
-        $(".email-input").focus();
-        selected = $(this).data("eid");
-        console.log($(this).data("eid"));
+        console.log(config.email);
+        if(config.email != "false"){
+          searching = true;
+          $(".app").addClass("blur");
+          $("#add-event").removeClass("hidden display-none");
+          $(".email-input").focus();
+          selected = $(this).data("eid");
+          console.log($(this).data("eid"));
+        }
       }
 
     });

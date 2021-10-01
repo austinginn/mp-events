@@ -3,9 +3,6 @@
 //Debug
 ///Add debug portal login and security
 ///favicon upload in debug portal
-//Nodemailer
-//Event Search
-///show events after search
 //PWA
 ///local storage for events
 ///Online / Offline icon
@@ -20,7 +17,6 @@ require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const _dirname = require('path').dirname(require.main.filename);
-// const nodemailer = require("nodemailer");
 const app = express();
 const nodemailer = require("nodemailer");
 app.use('/static', express.static(_dirname + "/static"));
@@ -51,6 +47,7 @@ var highCostLimiter = new FastRateLimit({
 //Default Server Config
 var WEB_TITLE = "Events";
 var ICS_ENABLED = true;
+var ICS_EMAIL = true;
 var WEBHOOK_UPDATE = true;
 var SCHEDULED_UPDATE = true;
 var DEBUG_PORTAL = true;
@@ -106,7 +103,7 @@ app.get("/", (req, res) => {
 
 //wrap in rate limiter
 app.get("/api/data/config", (req, res) => {
-	res.send({"title": WEB_TITLE, "light_theme": LIGHT_THEME, "dark_theme": DARK_THEME});
+	res.send({"title": WEB_TITLE, "email": ICS_EMAIL, "light_theme": LIGHT_THEME, "dark_theme": DARK_THEME});
 });
 
 //wrap in rate limiter
@@ -128,7 +125,10 @@ app.get("/api/data", (req, res) => {
 //post
 //wrap in rate limiter
 app.post("/api/send", (req, res) => {
-	console.log(req.body);
+	if(ICS_EMAIL){
+		highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
+	.then(() => {
+		console.log(req.body);
 		//token consumed
 		//okay to send
 		//add email to list
@@ -156,6 +156,11 @@ app.post("/api/send", (req, res) => {
 			res.send({"result": "failed", "reason": "unable to send -- could not find event", "data": ""});
 			return -1;
 		}
+	})
+	.catch(() => {
+		debug("All tokens consumed by " + req.ip);
+	});
+	}	
 });
 
 
@@ -360,6 +365,9 @@ function configServer(){
 		if(config.ics){
 			ICS_ENABLED = config.ics;
 		}
+		if(config.ics_email){
+			ICS_EMAIL = config.ics_email;
+		}
 		if(config.webhook_update){
 			WEBHOOK_UPDATE = config.webhook_update;
 		}
@@ -470,11 +478,6 @@ async function main(rec, event, callback) {
   
 	console.log("Message sent: %s", info.messageId);
 	callback();
-	// Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-  
-	// Preview only available when sending through an Ethereal account
-	// console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-	// Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
   }
 
   function toB(str){
