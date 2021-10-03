@@ -8,11 +8,11 @@
     "light_theme": {
         "text": "#303036",
         "background": "#FFFAFF",
-        "header": "#30bced"
+        "header": "#4B696C"
     },
     "dark_theme": {
         "text": "#FFFAFF",
         "background": "#303036",
-        "header": "#30bced"
+        "header": "#4B696C"
     }
 }
