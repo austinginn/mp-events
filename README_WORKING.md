@@ -30,7 +30,7 @@ Modify mp-events/node/config.json with the following options:
 | scheduled_update | boolean | true | enable daily Ministry Platform events pull
 | portal | boolean | true | enables administrative portal for debug and dynamic server option changes
 | light_theme | object | {"text": "#303036","background": "#FFFAFF", "header": "#4B696C"} | hex color values for the light theme of the web app
-| dark_theme | object | {"text": "#FFFAFF", "background": "#303036", "header": "#4B696C"} | hex color values for the light theme of the web app
+| dark_theme | object | {"text": "#FFFAFF", "background": "#303036", "header": "#4B696C"} | hex color values for the dark theme of the web app
 
 ## Icons
 In the mp-events/node/static/images directory you will find all of the default icon files.  You can create your own and replace the .png files in this directory.  Be sure to match naming scheme and image dimensions:
@@ -76,9 +76,9 @@ npm start
 ## Notes
 There are many things outside of the scope of this document that need to be configured to make your Event Calendar public. 
 Here are some helpful resources
--Web Server Hosting
--DNS and subdomains
--HTTPS and SSL Certs
+- Web Server Hosting
+- DNS and subdomains
+- HTTPS and SSL Certs
 
 # Credit
 Created and maintained by Austin Ginn for Alpharetta Methodist.  
