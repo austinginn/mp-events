@@ -101,6 +101,10 @@ app.get("/", (req, res) => {
 		res.sendFile(_dirname + "/html/events.html");
 });
 
+app.get("/service-worker.js", (req, res) => {
+	res.sendFile(_dirname + "/service-worker.js");
+});
+
 //wrap in rate limiter
 app.get("/api/data/config", (req, res) => {
 	res.send({"title": WEB_TITLE, "email": ICS_EMAIL, "light_theme": LIGHT_THEME, "dark_theme": DARK_THEME});

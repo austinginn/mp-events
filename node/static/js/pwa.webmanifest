@@ -1,0 +1,24 @@
+{
+    "name": "Event Calendar",
+    "short_name": "Events",
+    "description": "Event Calendar for use with Ministry Platform Databases",
+    "icons": [
+      {
+        "src": "/../static/images/splash-screen.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "/../static/images/maskable-icon.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "maskable"
+      }
+
+    ],
+    "start_url": "/",
+    "display": "fullscreen",
+    "theme_color": "#764ABC",
+    "background_color": "#764ABC"
+  }
