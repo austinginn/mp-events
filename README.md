@@ -2,9 +2,8 @@
 ### the main branch will not be stable until TODO is finished. 
 # TODO
 ### -server config portal
-### -pwa support
-### --local storage implementation for offline use
-### --manifest file xplatform
+### -offline indication
+### -disable email when offline
 ### -documenation
 ### --readme
 ### --ministry platform configuration
