@@ -4,6 +4,8 @@
 ### -server config portal
 ### -offline indication
 ### -disable email when offline
+### -serve font awesome locally
+### -serve fonts locally
 ### -documenation
 ### --readme
 ### --ministry platform configuration
