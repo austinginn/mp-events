@@ -26,6 +26,7 @@
   "dependencies": {
     "@kidkarolis/not-so-fast": "^1.0.1",
     "dotenv": "^10.0.0",
+    "express-handlebars": "^5.3.4",
     "nodemailer": "^6.6.5",
     "request": "^2.88.2",
     "socket.io": "^4.2.0"

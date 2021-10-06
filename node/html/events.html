@@ -263,6 +263,15 @@
       cursor: pointer;
     }
 
+    .connection {
+      position: fixed;
+      bottom: 5px;
+      left: 15px;
+      color: red;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
     .back {
       position: fixed;
       bottom: 20px;
@@ -523,6 +532,7 @@
     </div>
     <span class="fas fa-search search"></span>
     <span class="fas fa-times-circle back display-none"></span>
+    <span class="fas fa-signal connection display-none"></span>
   </div>
 
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
@@ -540,10 +550,14 @@
     const rootEl = document.querySelector(':root');
     var loaded = { "themes": false, "events": false };
     var searching = false;
+    if(!navigator.onLine){
+      
+    }
 
     //load server config
     if (!navigator.onLine) {
       console.log("NO INTERNET CONNECTION");
+      $(".connection").removeClass("display-none");
       config = JSON.parse(myStorage.getItem('config'));
       console.log(config);
       $("#title").text(config.title);

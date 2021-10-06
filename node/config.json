@@ -1,5 +1,6 @@
 {
     "title": "Events",
+    "meta-description": "Event calendar for my organization",
     "ics": "true",
     "ics_email": "true",
     "webhook_update": "true",

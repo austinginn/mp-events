@@ -46,6 +46,7 @@ var highCostLimiter = new FastRateLimit({
 
 //Default Server Config
 var WEB_TITLE = "Events";
+var META_DESCRIPTION = "this is a test";
 var ICS_ENABLED = true;
 var ICS_EMAIL = true;
 var WEBHOOK_UPDATE = true;
