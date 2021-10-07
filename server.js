@@ -31,8 +31,6 @@ const MP = require("./mp-events.js");
 const fs = require('fs');
 const Mail = require('nodemailer/lib/mailer');
 
-
-
 var test = new MP(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.ROOT);
 var events = [];
 var cal = "";
