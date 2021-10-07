@@ -31,7 +31,7 @@ const MP = require("./mp-events.js");
 const fs = require('fs');
 const Mail = require('nodemailer/lib/mailer');
 
-debug(process.env.CLIENT_ID + " " + process.env.CLIENT_SECRET + " " + process.env.ROOT);
+
 
 var test = new MP(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.ROOT);
 var events = [];
@@ -74,6 +74,7 @@ iot.on('connection', function(socket){
     console.log('client disconencted');
   });
 });
+debug(process.env.CLIENT_ID + " " + process.env.CLIENT_SECRET + " " + process.env.ROOT);
 
 
 ///HTTP client listen on 3000
