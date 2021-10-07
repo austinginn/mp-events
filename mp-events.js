@@ -8,7 +8,7 @@ var MP = function()
 
   //constructor
   var constructor = function MP(client_id, client_secret, root){
-    console.log("in constructor");
+    // console.log("in constructor");
     oauth.config = {
     	rootPath: "https://" + root + ".ministryplatform.com/ministryplatformapi",
     	url: "https://" + root + ".ministryplatform.com/ministryplatformapi/oauth/connect/authorize",
