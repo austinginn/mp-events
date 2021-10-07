@@ -428,6 +428,21 @@
       -webkit-appearance: none;
     }
 
+    #no-results {
+      top: 50%;
+      position: absolute;
+      text-align: center;
+      width: 100%;
+    }
+    #no-results h2 {
+      font-size: 2rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.2rem;
+      margin-bottom: 1rem;
+    }
+
+
     /* .search-button {
       position: absolute;
       top: 10px;
@@ -861,8 +876,13 @@
       ];
       //clear events
       $('#event-list-results').empty();
-      //append html event section
+      console.log(results.length);
+      if(results.length == 0){
+        $('#event-list-results').html('<span id="no-results"><h2>No Results</h2></span>');
+      } else {
+         //append html event section
       $('#event-list-results').html('<tbody id="events-table-results" class="events-table"></tbody>');
+      
 
 
       for (var i = 0; i < results.length; i++) {
@@ -874,6 +894,8 @@
         // console.log("TZ Mods: " + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}));
         // console.log("TZ No Mods: " + endT.toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"}));
       }
+      }
+     
       $(".container").addClass("display-none");
       $("#myHeader").addClass("display-none");
       $("#events-container").addClass("display-none");

@@ -46,7 +46,7 @@ var highCostLimiter = new FastRateLimit({
 
 //Default Server Config
 var WEB_TITLE = "Events";
-var META_DESCRIPTION = "this is a test";
+var META_DESCRIPTION = "This is a test";
 var ICS_ENABLED = true;
 var ICS_EMAIL = true;
 var WEBHOOK_UPDATE = true;
@@ -106,12 +106,18 @@ app.get("/service-worker.js", (req, res) => {
 	res.sendFile(_dirname + "/service-worker.js");
 });
 
-//wrap in rate limiter
 app.get("/api/data/config", (req, res) => {
-	res.send({"title": WEB_TITLE, "email": ICS_EMAIL, "light_theme": LIGHT_THEME, "dark_theme": DARK_THEME});
+	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
+	.then(() => {
+		res.send({"title": WEB_TITLE, "email": ICS_EMAIL, "light_theme": LIGHT_THEME, "dark_theme": DARK_THEME});
+	})
+	.catch(() => {
+		debug("All tokens consumed by " + req.ip);
+	})
+	
 });
 
-//wrap in rate limiter
+
 app.get("/api/data", (req, res) => {
 	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
 	.then(() => {
@@ -168,8 +174,11 @@ app.post("/api/send", (req, res) => {
 	}	
 });
 
-
+//convert to post with secret
 app.get('/api/update', function(req, res){
+	debug(req.get('host'));
+	debug(req.get('origin'));
+	debug(req.hostname);
 	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
 	.then(() => {
 		if(WEBHOOK_UPDATE){
@@ -366,6 +375,9 @@ function configServer(){
 	if(config){
 		if(config.title){
 			WEB_TITLE = config.title;
+		}
+		if(config.meta_description){
+			META_DESCRIPTION = config.meta_description;
 		}
 		if(config.ics){
 			ICS_ENABLED = config.ics;
