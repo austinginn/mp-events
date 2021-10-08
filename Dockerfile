@@ -8,14 +8,6 @@ COPY package*.json ./
 
 COPY config.json ./
 
-COPY config.sh ./
-
-RUN chmod +x ./config.sh
-
-RUN sh ./config.sh
-
-RUN ls
-
 USER node
 
 RUN npm install
