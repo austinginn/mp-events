@@ -90,7 +90,7 @@ npm start
 
 ## Notes
 There are many things outside of the scope of this document that need to be configured to make your Event Calendar public. 
-Here are some helpful resources
+Here are some helpful resources:
 - Web Server Hosting
 - DNS and subdomains
 - HTTPS and SSL Certs
