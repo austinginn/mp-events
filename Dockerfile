@@ -10,7 +10,7 @@ COPY config.json ./
 
 COPY config.sh ./
 
-RUN chmod +x /sayhello.sh
+RUN chmod +x ./config.sh
 
 USER node
 
