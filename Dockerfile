@@ -12,9 +12,9 @@ COPY config.sh ./
 
 RUN chmod +x ./config.sh
 
-USER node
+RUN ./
 
-RUN ./config.sh
+USER node
 
 RUN npm install
 
