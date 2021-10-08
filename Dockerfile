@@ -14,7 +14,7 @@ RUN chmod +x ./config.sh
 
 RUN ls
 
-RUN ./config.sh
+RUN sh ./config.sh
 
 USER node
 
