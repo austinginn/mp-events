@@ -1,6 +1,6 @@
-CLIENT_ID=""
-CLIENT_SECRET=""
-ROOT=""
+CLIENT_ID=your_minitsry_platform_api_client_id
+CLIENT_SECRET=your_minitsry_platform_api_secret
+ROOT=the subdomain from your ministry platform link -- example.ministryplatform.com would be example
 EMAIL_HOST=""
 EMAIL_PORT=""
 EMAIL_SECURE=""

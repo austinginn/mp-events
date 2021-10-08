@@ -32,7 +32,6 @@ var MP = function()
           }
         }, function(err, res, body){
               //store token
-              console.log(body);
               var response = JSON.parse(body);
               oauth.token = response.access_token;
               // console.log(oauth.token);

@@ -6,6 +6,10 @@ WORKDIR /home/node/app
 
 COPY package*.json ./
 
+COPY config.json ./
+
+COPY conifg.sh ./
+
 USER node
 
 RUN npm install
