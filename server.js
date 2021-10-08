@@ -19,6 +19,8 @@ const http = require('http');
 const _dirname = require('path').dirname(require.main.filename);
 const app = express();
 const nodemailer = require("nodemailer");
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 app.use('/static', express.static(_dirname + "/static"));
 
 
@@ -62,6 +64,7 @@ var DARK_THEME = {
 	"background": "#000",
 	"header": "#024873"
 }
+var LAST_SYNCED = Date.now();
 
 //socket io
 ///sockets init
@@ -86,7 +89,11 @@ server.listen(3000, function(){
 	
 	//if scheduled update -- 24hr timer
 	asyncEvents();
+
 	debug("Number of events loaded: " + events.length);
+	setInterval(() => {
+		debug("hello world");
+	}, 5000)
 });
 
 app.get("/api/ics", (req, res) => { 
@@ -103,6 +110,10 @@ app.get("/", (req, res) => {
 		res.sendFile(_dirname + "/html/events.html");
 });
 
+app.get("/admin", (req, res) => {
+	res.sendFile(_dirname + "/html/login.html");
+});
+
 app.get("/service-worker.js", (req, res) => {
 	res.sendFile(_dirname + "/service-worker.js");
 });
@@ -110,7 +121,7 @@ app.get("/service-worker.js", (req, res) => {
 app.get("/api/data/config", (req, res) => {
 	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
 	.then(() => {
-		res.send({"title": WEB_TITLE, "email": ICS_EMAIL, "light_theme": LIGHT_THEME, "dark_theme": DARK_THEME});
+		res.send({"title": WEB_TITLE, "email": ICS_EMAIL, "ics": ICS_ENABLED, "webhook": WEBHOOK_UPDATE, "light_theme": LIGHT_THEME, "dark_theme": DARK_THEME, "last_synced": LAST_SYNCED});
 	})
 	.catch(() => {
 		debug("All tokens consumed by " + req.ip);
@@ -173,6 +184,43 @@ app.post("/api/send", (req, res) => {
 		debug("All tokens consumed by " + req.ip);
 	});
 	}	
+});
+
+//wrap in rate limiter
+app.post("/auth/login", async (req, res) => {
+	console.log("in auth");
+	//research timing attacks and do i need bcrypt?
+	if(req.body.password == process.env.PORTAL_SECRET){
+		res.status(200).json({status:"ok"})
+	} else {
+		res.send("failed");
+		console.log("failed");
+	}
+});
+
+//wrap in rate limiter
+app.post("/auth/token", async (req, res) => {
+	console.log("in auth");
+	//research timing attacks and do i need bcrypt?
+	if(req.body.password == process.env.PORTAL_SECRET){
+		res.status(200).json({status:"ok"})
+	} else {
+		res.send("failed");
+		console.log("failed");
+	}
+});
+
+
+//wrap in rate limiter
+app.post("/auth/logout", async (req, res) => {
+	console.log("in auth");
+	//research timing attacks and do i need bcrypt?
+	if(req.body.password == process.env.PORTAL_SECRET){
+		res.status(200).json({status:"ok"})
+	} else {
+		res.send("failed");
+		console.log("failed");
+	}
 });
 
 //convert to post with secret

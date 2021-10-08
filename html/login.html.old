@@ -1,0 +1,296 @@
+<meta name="viewport" content="width=device-width, initial-scale=1,
+user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* overflow: hidden; */
+  min-width: 100%;
+  min-height: 100%;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Nunito', sans-serif;
+  background-color: #262527;
+
+}
+
+input, textarea, button {
+  font-family: 'Nunito', sans-serif;
+}
+h1 {
+  color: rgb(255, 255, 255);
+  font-family: 'Nunito', sans-serif;
+  text-align: center;
+}
+
+.wrapper {
+  height: 100vh;
+  color: #fae881;
+}
+
+.flex_box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.box {
+  position: absolute;
+  background-color: black;
+  width: 50px;
+  height: 50px;
+  transition: 0.2s;
+}
+
+form {
+  position: absolute;
+  padding: 30px 20px;
+  width: 320px;
+  border-radius: 7px;
+  background-color: white;
+  backdrop-filter: blur(5px);
+  background-color: rgba(158, 189, 199, 0.288);
+  overflow: hidden;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+}
+
+input, textarea {
+  padding: 8px 10px;
+  margin: 3px 8px 16px 8px;
+  background-color: rgba(222, 239, 248, 0.877);
+  border: 0px transparent;
+  border-radius: 5px;
+  color:rgb(97, 4, 184);
+  font-size: 16px;
+  word-break: break-all; /* haven't found the best solution here yet, paragraphs are difficult to deal with */
+  hyphens: auto;
+  z-index: 1;
+}
+select {
+   padding: 8px 10px;
+   margin: 3px 8px 16px 8px;
+   background-color: rgba(222, 239, 248, 0.877);
+   border: 0px transparent;
+   border-radius: 5px;
+   color:rgb(97, 4, 184);
+   font-size: 16px;
+   /* word-break: break-all; /* haven't found the best solution here yet, paragraphs are difficult to deal with */
+   hyphens: auto; 
+   z-index: 1;
+}
+
+select, option {
+  padding: 8px 10px;
+  font-family: 'Nunito', sans-serif;
+}
+
+label {
+  margin: 0 8px;
+  font-size: 14px;
+  color: white;
+}
+
+.button_wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+button {
+  padding: 8px 14px;
+  margin: 20px 8px 0 0;
+  border-width: 0px;
+  border-radius: 5px;
+  color: white;
+  background-color: #b69269;
+  transition: 0.3s;
+  z-index: 1;
+}
+
+button:hover {
+  color: rgb(60, 35, 153);
+  background-color: white;
+}
+
+
+.cover {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  pointer-events: none;
+  height: 100vh;
+  width: 100%;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.ghost {
+  position: absolute;
+  padding: 8px 10px;
+  border: 0px transparent;
+  border-radius: 5px;
+  z-index: 1;
+  color:rgb(97, 4, 184);
+  font-size: 16px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.ghost > div {
+  margin: 0;
+  padding: 0;
+  transition: 5s;
+}
+
+.blank {
+  width: 4px;
+}
+
+form.fade {
+  animation: fade forwards ease 5s;
+}
+
+@keyframes fade {
+  0% {
+    opacity: 1;
+    transform: translate(0vw, 0) skew(0);
+  }
+  20% {
+    opacity: 0.8;
+    transform: translate(0vw, 0) skew(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(50vw, -50vh) skew(-45deg);
+  }
+}
+
+form.fade_in {
+  animation: fade_in forwards ease 6s;
+}
+
+@keyframes fade_in {
+  0% {
+    opacity: 0;
+    transform: translate(-50vw, 150vh) skew(-45deg);
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0) skew(0);
+  }
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: rgb(140, 145, 216);
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: rgb(140, 145, 216);
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: rgb(140, 145, 216);
+}
+
+.sign {
+  position: absolute;
+  color: white;
+  bottom: 10px;
+  right: 10px;
+  font-size: 10px;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+</style>
+
+<body>
+
+<div class="wrapper flex_box">
+
+  <form>
+    <h1>login</h1>
+    <div class="input">
+      <label>
+        password
+      </label>
+      <input class="password" id="password" placeholder="enter password" type="password">
+    </div>
+    <div class="button_wrapper">
+      <button id="login">
+        login
+      </button>
+    </div>
+  </form>
+</div>
+<!-- <div class="sign">
+  by Austin Ginn / <a href="http://www.afumc.org">afumc.org</a>
+</div> -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+
+<script>
+
+  $("#login").click(function(){
+    login();
+  });
+
+  const element = document.querySelector('form');
+  element.addEventListener('submit', event => {
+    event.preventDefault();
+    // actual logic, e.g. validate the form
+  });
+
+  function login(){
+    //grab form data
+    let loginData = {"password": $("#password").val() };
+    console.log(loginData);
+    if(loginData.password == ""){
+      console.log("missing data");
+      return -1;
+    }
+    //make post
+    $.ajax
+    ({
+      type: "POST",
+      url: "/auth/login",
+      dataType: "json",
+      data: loginData,
+      success: function(){
+        console.log("success!");
+        //load configure page
+        window.location = "/configure";
+      },
+      error: function(){
+        console.log('failure');
+      }
+    });
+  }
+
+</script>
+
+</body>
