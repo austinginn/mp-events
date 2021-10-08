@@ -12,7 +12,7 @@ COPY config.sh ./
 
 RUN chmod +x ./config.sh
 
-RUN ./
+RUN ./config.sh
 
 USER node
 
