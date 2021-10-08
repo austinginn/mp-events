@@ -12,17 +12,22 @@ Features:
 
 A running example: events.afumc.org  
 
-## Installation
-Docker:
+## Quick Installation and Run
+Using docker environment:
 ```
 docker build https://github.com/austinginn/mp-events.git
 ```
+Create a .env file with text editor of choice (see "Environmnet Variables" section).
+```
+docker run 
+```
 
+## Custom Installation
 ```
 git clone https://github.com/austinginn/mp-events.git
-cd mp-events/node
-npm install
+cd mp-events
 ```
+Modify opitions as needed and then either docker build from mp-events or npm install.
 ## Server Options
 Modify mp-events/node/config.json with the following options:
 | Key | Value | Default | Description |
