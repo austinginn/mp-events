@@ -12,7 +12,7 @@ COPY config.sh ./
 
 USER node
 
-RUN ./install.sh
+RUN ./config.sh
 
 RUN npm install
 
