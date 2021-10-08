@@ -3,11 +3,6 @@
 //Debug
 ///Add debug portal login and security
 ///favicon upload in debug portal
-//PWA
-///local storage for events
-///Online / Offline icon
-///all other icon stuff
-//Add event
 
 ///////
 require('dotenv').config();

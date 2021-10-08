@@ -13,6 +13,11 @@ Features:
 A running example: events.afumc.org  
 
 ## Installation
+Docker:
+```
+docker build https://github.com/austinginn/mp-events.git
+```
+
 ```
 git clone https://github.com/austinginn/mp-events.git
 cd mp-events/node
@@ -33,7 +38,12 @@ Modify mp-events/node/config.json with the following options:
 | dark_theme | object | {"text": "#FFFAFF", "background": "#303036", "header": "#4B696C"} | hex color values for the dark theme of the web app
 
 ## Icons
-In the mp-events/node/static/images directory you will find all of the default icon files.  You can create your own and replace the .png files in this directory.  Be sure to match naming scheme and image dimensions:
+In the mp-events/node/static/images directory you will find all of the default icon files.  You can create your own and replace the .png files in this directory.  Be sure to match naming scheme and image dimensions. You cannot achieve this by using the 
+```
+docker build https://github.com/austinginn/mp-events.git
+```
+installation method.  You will need to clone this repo, make your changes and then build from the cloned repo.
+
 | File Name | Dimensions | Description
 |--|--|--|
 | apple-touch-icon.png |   | icon used for apple devices when web app is added to home screen
