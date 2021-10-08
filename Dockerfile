@@ -12,6 +12,8 @@ COPY config.sh ./
 
 RUN chmod +x ./config.sh
 
+RUN ls
+
 RUN ./config.sh
 
 USER node
