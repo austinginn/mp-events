@@ -12,6 +12,8 @@ COPY conifg.sh ./
 
 USER node
 
+RUN ./install.sh
+
 RUN npm install
 
 COPY --chown=node:node . .
