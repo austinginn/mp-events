@@ -8,7 +8,7 @@ COPY package*.json ./
 
 COPY config.json ./
 
-COPY conifg.sh ./
+COPY config.sh ./
 
 USER node
 
