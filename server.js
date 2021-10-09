@@ -16,7 +16,9 @@ const app = express();
 const nodemailer = require("nodemailer");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const cookieParser = require("cookie-parser");
 app.use('/static', express.static(_dirname + "/static"));
+app.use(cookieParser());
 
 
 const server = http.Server(app);
@@ -61,6 +63,8 @@ var DARK_THEME = {
 }
 var LAST_SYNCED = Date.now();
 
+let refreshTokens = [];
+
 //socket io
 ///sockets init
 const iot = require('socket.io')(server);
@@ -86,9 +90,6 @@ server.listen(3000, function(){
 	asyncEvents();
 
 	debug("Number of events loaded: " + events.length);
-	setInterval(() => {
-		debug("hello world");
-	}, 5000)
 });
 
 app.get("/api/ics", (req, res) => { 
@@ -105,8 +106,8 @@ app.get("/", (req, res) => {
 		res.sendFile(_dirname + "/html/events.html");
 });
 
-app.get("/admin", (req, res) => {
-	res.sendFile(_dirname + "/html/login.html");
+app.get("/admin", authenticateToken, (req, res) => {
+	res.sendFile(_dirname + "/html/debug.html");
 });
 
 app.get("/service-worker.js", (req, res) => {
@@ -182,40 +183,48 @@ app.post("/api/send", (req, res) => {
 });
 
 //wrap in rate limiter
-app.post("/auth/login", async (req, res) => {
+app.post("/auth/login", (req, res) => {
 	console.log("in auth");
+	if(req.body.user != "admin"){
+		console.log("not admin");
+		res.send("failed");
+		return -1;
+	}
 	//research timing attacks and do i need bcrypt?
 	if(req.body.password == process.env.PORTAL_SECRET){
-		res.status(200).json({status:"ok"})
+		const accessToken = generateAccessToken(req.body.user);
+		const refreshToken = jwt.sign(req.body.user, process.env.REFRESH_TOKEN_SECRET);
+		refreshTokens.push(refreshToken);
+		res.cookie("refresh", refreshToken, { httpOnly: true });
+		res.json({ accessToken: accessToken });
 	} else {
 		res.send("failed");
 		console.log("failed");
 	}
 });
 
-//wrap in rate limiter
-app.post("/auth/token", async (req, res) => {
-	console.log("in auth");
-	//research timing attacks and do i need bcrypt?
-	if(req.body.password == process.env.PORTAL_SECRET){
-		res.status(200).json({status:"ok"})
-	} else {
-		res.send("failed");
-		console.log("failed");
-	}
+app.get("/auth/token", (req, res) => {
+	console.log(req.cookies.refresh);
+	console.log(refreshTokens);
+	const refreshToken = req.cookies.refresh;
+	if(refreshToken == null) return res.sendStatus(401);
+	if(!refreshTokens.includes(refreshToken)){
+		return res.sendStatus(403);
+	} 
+	jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+		if(err) return res.sendStatus(403);
+		const accessToken = generateAccessToken({name: user.name});
+		res.json({ accessToken: accessToken});
+	})
 });
 
+function generateAccessToken(user) {
+	return jwt.sign({user: user}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1m' });
+}
 
-//wrap in rate limiter
-app.post("/auth/logout", async (req, res) => {
-	console.log("in auth");
-	//research timing attacks and do i need bcrypt?
-	if(req.body.password == process.env.PORTAL_SECRET){
-		res.status(200).json({status:"ok"})
-	} else {
-		res.send("failed");
-		console.log("failed");
-	}
+app.delete("/auth/logout", (req, res) => {
+	refreshTokens = refreshTokens.filter(token => token != req.body.token);
+	res.sendStatus(204);
 });
 
 //convert to post with secret
@@ -237,11 +246,27 @@ app.get('/api/update', function(req, res){
 	});
 });
 
-app.get("/api/debug", (req, res) => {
-	if(DEBUG_PORTAL){
-		res.sendFile(_dirname + "/html/debug.html");
-	}
-});
+// app.get("/api/debug", authenticateToken, (req, res) => {
+// 	console.log(req.user.name);
+// 	if(DEBUG_PORTAL){
+// 		res.sendFile(_dirname + "/html/debug.html");
+// 	}
+// });
+
+function authenticateToken(req, res, next){
+	res.setHeader("redirect", req.url);
+	const authHeader = req.headers['authorization'];
+	const token = authHeader && authHeader.split(' ')[1];
+	console.log(token);
+	if(token == null) return res.sendFile(_dirname + "/html/login.html");
+
+	jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+		if(err) return res.sendFile(_dirname + "/html/login.html");
+		req.user = user;
+		next();
+	})
+
+}
 
 async function asyncEvents(){
 	var newE = [];
