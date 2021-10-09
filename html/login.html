@@ -272,6 +272,9 @@
 
 
   <script>
+      var global_token;
+
+      $("#password").focus();
 
     $.ajax({
       type: "GET",
@@ -288,6 +291,14 @@
   $("#login").click(function(){
     login();
   });
+
+  $.ajax({
+    url: '/script.cgi',
+    type: 'DELETE',
+    success: function(result) {
+        // Do something with the result
+    }
+});
 
 
     const element = document.querySelector('form');
@@ -326,6 +337,7 @@
       if (xhr.responseJSON.accessToken) {
         console.log("I got an access token");
         const accessToken = xhr.responseJSON.accessToken;
+        globalToken = accessToken;
         $.ajax({
           type: "GET",
           url: xhr.getResponseHeader("redirect"),

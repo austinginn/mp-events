@@ -183,6 +183,20 @@ app.post("/api/send", (req, res) => {
 });
 
 //wrap in rate limiter
+app.post("/api/submit/config", authenticateToken, (req, res) => {
+	console.log(req.body);
+	console.log("here");
+	WEB_TITLE = req.body.title;
+	ICS_ENABLED = toB(req.body.ics);
+	ICS_EMAIL = toB(req.body.email);
+	WEBHOOK_UPDATE = toB(req.body.webhook);
+	LIGHT_THEME = req.body.light_theme;
+	DARK_THEME = req.body.dark_theme;
+	res.json("200");
+});
+
+
+//wrap in rate limiter
 app.post("/auth/login", (req, res) => {
 	console.log("in auth");
 	if(req.body.user != "admin"){
@@ -223,7 +237,10 @@ function generateAccessToken(user) {
 }
 
 app.delete("/auth/logout", (req, res) => {
-	refreshTokens = refreshTokens.filter(token => token != req.body.token);
+	console.log("here");
+	console.log(req.cookies.refresh);
+	refreshTokens = refreshTokens.filter(token => token != req.cookies.refresh);
+	console.log(refreshTokens);
 	res.sendStatus(204);
 });
 
@@ -254,6 +271,7 @@ app.get('/api/update', function(req, res){
 // });
 
 function authenticateToken(req, res, next){
+	console.log(req.url);
 	res.setHeader("redirect", req.url);
 	const authHeader = req.headers['authorization'];
 	const token = authHeader && authHeader.split(' ')[1];

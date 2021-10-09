@@ -1,0 +1,176 @@
+html {
+    font-size: 62.5%;
+    overflow: scroll;
+    overflow-x: hidden;
+  }
+
+  body {
+    height: 100%;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    font-family: "Inconsolata", monospace;
+    font-size: 25px;
+    background-color: #f2f2f2;
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  h1 {
+    font-size: 4.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    margin-bottom: 1rem;
+    font-size: 3rem;
+  }
+
+  h3 {
+    font-size: 3rem;
+    margin: 0;
+  }
+
+  #grey1 {
+    font-size: 100px;
+    color: #212121;
+  }
+
+  #white1 {
+    font-size: 100px;
+    color: #f2f2f2;
+  }
+
+  #vWhite {
+    font-size: 25px;
+    color: #212121;
+    z-index: 3;
+    position: absolute;
+    /*newly added*/
+    right: 5px;
+    /*newly added*/
+    bottom: 5px;
+    /*newly added*/
+  }
+
+  #title {
+    font-size: 40px;
+  }
+
+  .footer {
+    font-size: 25px;
+    color: #212121;
+    z-index: 3;
+    position: absolute;
+    /*newly added*/
+    right: 5px;
+    /*newly added*/
+    bottom: 5px;
+    /*newly added*/
+  }
+
+  a {
+    color: #212121;
+  }
+
+  a:hover {
+    color: #00A0C6;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  #button {
+    border-style: solid;
+    border-width: thin;
+    padding: 5px;
+  }
+
+  #button:hover {
+    color: #00A0C6;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  #button {
+    -webkit-box-shadow: 10px 10px 6px 0px rgba(57, 56, 56, 1);
+    -moz-box-shadow: 10px 10px 6px 0px rgba(57, 56, 56, 1);
+    box-shadow: 4px 4px 4px 0px rgba(57, 56, 56, 1);
+  }
+
+  #button:active {
+    -ms-transform: translate(5px, 5px);
+    /* IE 9 */
+    -webkit-transform: translate(5px, 5px);
+    /* Safari */
+    transform: translate(5px, 5px);
+
+    -webkit-box-shadow: 0px 0px 0px 0px rgba(57, 56, 56, 1);
+    -moz-box-shadow: 0px 0px 0px 0px rgba(57, 56, 56, 1);
+    box-shadow: 2px 2px 4px 0px rgba(57, 56, 56, 1);
+  }
+
+  .noselect {
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+                                supported by Chrome and Opera */
+  }
+
+  .messages {
+    font-size: 30px;
+    color: #FF3333;
+    z-index: 3;
+    position: fixed;
+    /*newly added*/
+    right: 5px;
+    /*newly added*/
+    top: 5px;
+    /*newly added*/
+  }
+
+  #window {
+    background-color: #212121;
+    max-width: 400px;
+    height: 200px;
+    color: #f2f2f2;
+    font-size: 1.5rem;
+    padding: 5px;
+    overflow-y: auto;
+  }
+
+  #ls {
+    font-size: 1rem;
+    font-style: oblique;
+  }
+
+  #console {}
+
+  #content{
+    padding: 20px;
+    max-width: 550px;
+  }
+
+  #logout{
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    color: #212121;
+    font-size: 2.5rem;
+    cursor: pointer;
+  }
+
+  #logout:hover{
+    color: #FF3333;
+  }
