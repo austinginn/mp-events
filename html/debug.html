@@ -62,10 +62,13 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
-
+    const REFRESH_INTERVAL = 840000;
     let config;
 
     var socket = io();
+    setInterval(() => {
+      refreshToken();
+    }, REFRESH_INTERVAL);
 
     socket.on('debug', function (msg) {
       appendConsole(msg);
@@ -97,6 +100,7 @@
 
       //set textbox
       $("#web_title").val(config.title);
+      $("title").html(config.title + " | Admin Portal");
 
 
 
@@ -176,24 +180,12 @@
             xhr.setRequestHeader("Authorization", "Bearer " + globalToken);
           },
           success: function (data, status, request, xhr) {
-            console.log("success!");
+            console.log("Updated config!");
           },
           error: function (data, status, request, xhr) {
             console.log('access expired -- trying to get a new token');
-            $.ajax({
-              type: "GET",
-              url: "/auth/token",
-              success: function (data) {
-                console.log(data);
-                const accessToken = data.accessToken;
-                globalToken = accessToken;
-                console.log("refresh token successfully used");
-                //resubmit
-              },
-              error: function () {
-                console.log("refresh token expired --- you must sign in");
-                window.location.href = "/admin";
-              }
+            refreshToken(() => {
+              updateConfig(config);
             });
           }
         });
@@ -210,6 +202,32 @@
       var objDiv = document.getElementById("window");
       objDiv.scrollTop = objDiv.scrollHeight;
       return 0;
+    }
+
+    //refresh 
+    function refreshToken(callback){
+      console.log('refreshing access token');
+            $.ajax({
+              type: "GET",
+              url: "/auth/token",
+              success: function (data) {
+                console.log(data);
+                const accessToken = data.accessToken;
+                globalToken = accessToken;
+                console.log("refresh token successfully used");
+                //resubmit
+                if(callback){
+                  console.log("callback!");
+                  callback();
+                } else {
+                  return 0;
+                }
+              },
+              error: function () {
+                console.log("refresh token expired --- you must sign in");
+                window.location.href = "/admin";
+              }
+            });
     }
 
   </script>

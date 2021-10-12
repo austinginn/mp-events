@@ -234,7 +234,7 @@ app.get("/auth/token", (req, res) => {
 });
 
 function generateAccessToken(user) {
-	return jwt.sign({user: user}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+	return jwt.sign({user: user}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1m' });
 }
 
 app.delete("/auth/logout", (req, res) => {
@@ -293,6 +293,11 @@ function authenticateToken(req, res, next){
 		req.user = user;
 		next();
 	})
+
+}
+
+function authenticateTokenIO(req, res, next){
+	//authentication for socket.io
 
 }
 
