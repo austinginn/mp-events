@@ -1028,7 +1028,7 @@
         event.stopPropagation();
         console.log(event);
         console.log(config.email);
-        if (config.email != "false") {
+        if (config.email) {
           searching = true;
           $(".app").addClass("blur");
           $("#add-event").removeClass("hidden display-none");
