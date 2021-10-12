@@ -247,19 +247,24 @@ app.delete("/auth/logout", (req, res) => {
 
 //convert to post with secret
 app.post('/api/update', function(req, res){
-	debug(req.get('host'));
-	debug(req.get('origin'));
-	debug(req.hostname);
-	debug(req.headers['x-forwarded-for']);
-	debug(req.headers['host']);
-	debug(req.body);
-	debug(req.headers);
+	// debug(req.get('host'));
+	// debug(req.get('origin'));
+	// debug(req.hostname);
+	// debug(req.headers['x-forwarded-for']);
+	// debug(req.headers['host']);
+	debug(req.body.auth);
+	// debug(req.headers);
 	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
 	.then(() => {
 		if(WEBHOOK_UPDATE){
-			debug("update triggered");
-			res.send("Success!");
-			asyncEvents();
+			if(req.body.auth == proccess.env.UPDATE_SECRET){
+				debug("update triggered");
+				res.send("Success!");
+				asyncEvents();
+			} else {
+				debug("not authorized");
+				res.send("not authorized");
+			}
 		} else 
 		res.sendStatus(404);
 	})
