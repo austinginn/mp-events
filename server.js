@@ -257,7 +257,7 @@ app.post('/api/update', function(req, res){
 	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
 	.then(() => {
 		if(WEBHOOK_UPDATE){
-			if(req.body.auth == proccess.env.UPDATE_SECRET){
+			if(req.body.auth == process.env.UPDATE_SECRET){
 				debug("update triggered");
 				res.send("Success!");
 				asyncEvents();
