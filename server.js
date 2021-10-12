@@ -95,10 +95,11 @@ server.listen(3000, function(){
 app.get("/api/ics", (req, res) => { 
 	if(ICS_ENABLED){
 		res.set('Content-Type', 'text/calendar;charset=utf-8');
-		res.set('Content-Disposition', 'attachment; filename="afumc.ics"');
+		res.set('Content-Disposition', 'attachment; filename="events.ics"');
 		res.send(cal);
 	} else {
 		res.sendStatus(404);
+		debug("***ICS DISABLED***");
 	}
 });
 
@@ -249,6 +250,7 @@ app.get('/api/update', function(req, res){
 	debug(req.get('host'));
 	debug(req.get('origin'));
 	debug(req.hostname);
+	debug(req.headers['x-forwarded-for']);
 	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
 	.then(() => {
 		if(WEBHOOK_UPDATE){
