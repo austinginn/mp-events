@@ -246,11 +246,13 @@ app.delete("/auth/logout", (req, res) => {
 });
 
 //convert to post with secret
-app.get('/api/update', function(req, res){
+app.post('/api/update', function(req, res){
 	debug(req.get('host'));
 	debug(req.get('origin'));
 	debug(req.hostname);
 	debug(req.headers['x-forwarded-for']);
+	debug(req.headers['host']);
+	debug(req.body.auth);
 	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
 	.then(() => {
 		if(WEBHOOK_UPDATE){
