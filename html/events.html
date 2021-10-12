@@ -888,9 +888,9 @@
       for (var i = 0; i < results.length; i++) {
         var startT = new Date(results[i].Event_Start_Date);
         var endT = new Date(results[i].Event_End_Date);
-        $('#events-table-results').append('<tr class="event" id="event' + i + '"></tr>');
+        $('#events-table-results').append('<tr class="event" id="event_result' + i + '" data-eid="' + results[i].Event_ID + '"></tr>');
         // $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].Event_Title + '</span><br><span>' + eArr[i].Meeting_Instructions + '</span><br><span>' + startT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + ' - ' + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + '</span></td>');
-        $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + results[i].Event_Title + '</span><br><span>' + nullFix(results[i].Meeting_Instructions) + '</span><br><span>' + startT.toDateString() + '</span><br><span>' + results[i].est + '</span></td>');
+        $('#event_result' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + results[i].Event_Title + '</span><br><span>' + nullFix(results[i].Meeting_Instructions) + '</span><br><span>' + startT.toDateString() + '</span><br><span>' + results[i].est + '</span></td>');
         // console.log("TZ Mods: " + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}));
         // console.log("TZ No Mods: " + endT.toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"}));
       }
@@ -1074,7 +1074,7 @@
     });
 
     $(document).on('click', ".back", function (e) {
-      event.stopPropagation();
+      e.stopPropagation();
       $(".container").removeClass("display-none");
       $("#myHeader").removeClass("display-none");
       $("#events-container").removeClass("display-none");
