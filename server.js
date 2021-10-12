@@ -252,7 +252,7 @@ app.post('/api/update', function(req, res){
 	debug(req.hostname);
 	debug(req.headers['x-forwarded-for']);
 	debug(req.headers['host']);
-	debug(req.body.auth);
+	debug(req.body);
 	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
 	.then(() => {
 		if(WEBHOOK_UPDATE){
