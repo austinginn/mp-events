@@ -70,13 +70,13 @@ let refreshTokens = [];
 const iot = require('socket.io')(server);
 ////Socket Init////
 iot.on('connection', function(socket){
-  console.log('client connected');
+  console.log('socket.io client connected');
 
   socket.on('disconnect', function(){
-    console.log('client disconencted');
+    console.log('socket.io client disconencted');
   });
 });
-debug(process.env.CLIENT_ID + " " + process.env.CLIENT_SECRET + " " + process.env.ROOT);
+// debug(process.env.CLIENT_ID + " " + process.env.CLIENT_SECRET + " " + process.env.ROOT);
 
 
 ///HTTP client listen on 3000
@@ -148,7 +148,7 @@ app.post("/api/send", (req, res) => {
 	if(ICS_EMAIL){
 		highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
 	.then(() => {
-		console.log(req.body);
+		// console.log(req.body);
 		//token consumed
 		//okay to send
 		//add email to list
@@ -159,7 +159,7 @@ app.post("/api/send", (req, res) => {
 			if(events[i].Event_ID == req.body.eid){
 				f_event = events[i];
 				found = true;
-				console.log(events[i]);
+				// console.log(events[i]);
 			}
 		}
 
@@ -185,8 +185,8 @@ app.post("/api/send", (req, res) => {
 
 //wrap in rate limiter
 app.post("/api/submit/config", authenticateToken, (req, res) => {
-	console.log(req.body);
-	console.log("here");
+	// console.log(req.body);
+	// console.log("here");
 	WEB_TITLE = req.body.title;
 	ICS_ENABLED = toB(req.body.ics);
 	ICS_EMAIL = toB(req.body.email);
@@ -199,9 +199,9 @@ app.post("/api/submit/config", authenticateToken, (req, res) => {
 
 //wrap in rate limiter
 app.post("/auth/login", (req, res) => {
-	console.log("in auth");
+	// console.log("in auth");
 	if(req.body.user != "admin"){
-		console.log("not admin");
+		// console.log("not admin");
 		res.send("failed");
 		return -1;
 	}
@@ -214,13 +214,13 @@ app.post("/auth/login", (req, res) => {
 		res.json({ accessToken: accessToken });
 	} else {
 		res.send("failed");
-		console.log("failed");
+		debug("failed in /auth/login -- incorrect password");
 	}
 });
 
 app.get("/auth/token", (req, res) => {
-	console.log(req.cookies.refresh);
-	console.log(refreshTokens);
+	// console.log(req.cookies.refresh);
+	// console.log(refreshTokens);
 	const refreshToken = req.cookies.refresh;
 	if(refreshToken == null) return res.sendStatus(401);
 	if(!refreshTokens.includes(refreshToken)){
@@ -234,14 +234,14 @@ app.get("/auth/token", (req, res) => {
 });
 
 function generateAccessToken(user) {
-	return jwt.sign({user: user}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1m' });
+	return jwt.sign({user: user}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
 }
 
 app.delete("/auth/logout", (req, res) => {
-	console.log("here");
-	console.log(req.cookies.refresh);
+	// console.log("here");
+	// console.log(req.cookies.refresh);
 	refreshTokens = refreshTokens.filter(token => token != req.cookies.refresh);
-	console.log(refreshTokens);
+	// console.log(refreshTokens);
 	res.sendStatus(204);
 });
 
@@ -252,12 +252,11 @@ app.post('/api/update', function(req, res){
 	// debug(req.hostname);
 	// debug(req.headers['x-forwarded-for']);
 	// debug(req.headers['host']);
-	debug(req.body.auth);
+	// debug(req.body.auth);
 	// debug(req.headers);
 	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
 	.then(() => {
 		if(WEBHOOK_UPDATE){
-			debug(process.env.UPDATE_SECRET);
 			if(req.body.auth == process.env.UPDATE_SECRET){
 				debug("update triggered");
 				res.send("Success!");
@@ -282,11 +281,11 @@ app.post('/api/update', function(req, res){
 // });
 
 function authenticateToken(req, res, next){
-	console.log(req.url);
+	// console.log(req.url);
 	res.setHeader("redirect", req.url);
 	const authHeader = req.headers['authorization'];
 	const token = authHeader && authHeader.split(' ')[1];
-	console.log(token);
+	// console.log(token);
 	if(token == null) return res.sendFile(_dirname + "/html/login.html");
 
 	jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {

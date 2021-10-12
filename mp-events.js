@@ -63,7 +63,7 @@ var MP = function()
         }, function(err, res, body) {
                if(body == null){
                    //error email? token renew here
-               console.log(body);
+              //  console.log(body);
               return -1;
               }
           resolve(body);
