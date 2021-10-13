@@ -174,3 +174,30 @@ html {
   #logout:hover{
     color: #FF3333;
   }
+
+  .loading{
+    padding: 10px;
+    opacity: 1;
+  }
+
+  .icn-spinner {
+    animation: spin-animation 0.9s infinite;
+    display: inline-block;
+  }
+  
+  @keyframes spin-animation {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(359deg);
+    }
+  }
+
+  .hidden{
+    opacity: 0;
+  }
+
+  .display-none{
+    display: none;
+  }

@@ -44,7 +44,7 @@
     <br>
     Title: <input id="web_title" type="text"><br>
     <br>
-    <span id="button" class="noselect">update config</span>
+    <span id="button" class="noselect">update config</span><i class="loading icn-spinner hidden fas fa-spinner"></i>
     <br>
     <br>
 
@@ -139,7 +139,9 @@
       config.light_theme.background = document.getElementById("light_bColor").value;
     });
 
-    $("#button").click(function () {
+    $("#button").click(function () { 
+      $(".loading").removeClass("hidden");
+      
       config.title = $("#web_title").val();
       config.ics = $("#ics").is(':checked');
       config.email = $("#ics_email").is(':checked');
@@ -151,10 +153,14 @@
       config.dark_theme.text = $("#dark_tColor").val();
       config.dark_theme.header = $("#dark_aColor").val();
       config.dark_theme.background = $("#dark_bColor").val();
-      console.log(config)
-      console.log(globalToken);
+      // console.log(config)
+      // console.log(globalToken);
 
-      updateConfig(config);
+      updateConfig(config, () => {
+        setTimeout(() => {
+          $(".loading").addClass("hidden");
+        }, 1000);
+      });
 
     });
 
@@ -169,7 +175,7 @@
       });
     })
 
-    function updateConfig(config) {
+    function updateConfig(config, callback) {
       $.ajax
         ({
           type: "POST",
@@ -181,11 +187,14 @@
           },
           success: function (data, status, request, xhr) {
             console.log("Updated config!");
+            if(callback){
+              callback();
+            }
           },
           error: function (data, status, request, xhr) {
             console.log('access expired -- trying to get a new token');
             refreshToken(() => {
-              updateConfig(config);
+              updateConfig(config, callback);
             });
           }
         });
