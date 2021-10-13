@@ -268,7 +268,7 @@
     by Austin Ginn / <a href="http://www.afumc.org">afumc.org</a>
   </div> -->
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="/static/js/jquery-3.6.0.min.js"></script>
 
 
   <script>
@@ -292,13 +292,13 @@
     login();
   });
 
-  $.ajax({
-    url: '/script.cgi',
-    type: 'DELETE',
-    success: function(result) {
-        // Do something with the result
-    }
-});
+  // $.ajax({
+  //   url: '/script.cgi',
+  //   type: 'DELETE',
+  //   success: function(result) {
+  //       // Do something with the result
+  //   }
+// });
 
 
     const element = document.querySelector('form');
@@ -327,9 +327,14 @@
           },
           error: function () {
             console.log('failure');
+            $('input[type="password"]').css("background-color", "#ff5842");
+            $('#password').select();
           }
         });
     }
+    $(document).keypress(() => {
+      $('input[type="password"]').css("background-color", "#212121");
+    })
 
     $(document).ajaxSuccess(function (event, xhr, settings) {
       console.log(xhr.getResponseHeader("redirect"));

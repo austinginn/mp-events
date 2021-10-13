@@ -10,7 +10,7 @@
 
 
   <link rel="stylesheet" href="/static/css/portal.css" />
-  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css'>
+  <!-- <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css'> -->
 
 
 </head>
@@ -58,8 +58,8 @@
 
   </div>
 
-
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+  <link rel='stylesheet' href='/static/css/all.min.css'>
+  <script src='/static/js/jquery-3.6.0.min.js'></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const REFRESH_INTERVAL = 840000;
@@ -153,6 +153,7 @@
       config.dark_theme.text = $("#dark_tColor").val();
       config.dark_theme.header = $("#dark_aColor").val();
       config.dark_theme.background = $("#dark_bColor").val();
+      $("title").html(config.title);
       // console.log(config)
       // console.log(globalToken);
 
