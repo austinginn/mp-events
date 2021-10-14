@@ -15,7 +15,8 @@ const _dirname = require('path').dirname(require.main.filename);
 const app = express();
 const nodemailer = require("nodemailer");
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
+const crypto = require('crypto')
 const cookieParser = require("cookie-parser");
 app.use('/static', express.static(_dirname + "/static"));
 app.use(cookieParser());
@@ -29,6 +30,11 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 const MP = require("./mp-events.js");
 const fs = require('fs');
 const Mail = require('nodemailer/lib/mailer');
+
+const ACCESS_TOKEN_SECRET = crypto.randomBytes(64).toString('hex');
+const REFRESH_TOKEN_SECRET = crypto.randomBytes(64).toString('hex');
+
+
 
 
 
@@ -208,7 +214,7 @@ app.post("/auth/login", (req, res) => {
 	//research timing attacks and do i need bcrypt?
 	if(req.body.password == process.env.PORTAL_SECRET){
 		const accessToken = generateAccessToken(req.body.user);
-		const refreshToken = jwt.sign(req.body.user, process.env.REFRESH_TOKEN_SECRET);
+		const refreshToken = jwt.sign(req.body.user, REFRESH_TOKEN_SECRET);
 		refreshTokens.push(refreshToken);
 		res.cookie("refresh", refreshToken, { httpOnly: true });
 		res.json({ accessToken: accessToken });
@@ -226,7 +232,7 @@ app.get("/auth/token", (req, res) => {
 	if(!refreshTokens.includes(refreshToken)){
 		return res.sendStatus(403);
 	} 
-	jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+	jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, (err, user) => {
 		if(err) return res.sendStatus(403);
 		const accessToken = generateAccessToken({name: user.name});
 		res.json({ accessToken: accessToken});
@@ -234,7 +240,7 @@ app.get("/auth/token", (req, res) => {
 });
 
 function generateAccessToken(user) {
-	return jwt.sign({user: user}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1m' });
+	return jwt.sign({user: user}, ACCESS_TOKEN_SECRET, { expiresIn: '5m' });
 }
 
 app.delete("/auth/logout", (req, res) => {
@@ -288,7 +294,7 @@ function authenticateToken(req, res, next){
 	// console.log(token);
 	if(token == null) return res.sendFile(_dirname + "/html/login.html");
 
-	jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+	jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
 		if(err) return res.sendFile(_dirname + "/html/login.html");
 		req.user = user;
 		next();
