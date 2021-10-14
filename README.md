@@ -54,6 +54,7 @@ Modify it with the following variables:
 | EMAIL_SECURE | |
 | EMAIL_USER | Email user name (typically noreply@example.com)
 | EMAIL_SECRET | Email password
+
 Your final .env file should look something like this:
 ```
 CLIENT_ID=client
@@ -69,28 +70,30 @@ EMAIL_SECRET=noreplypassword
 
 ## Ministry Platform Configuration
 ### API Client
-- With MP admin credentials navigate to your Ministry Platform page - example.ministryplatform.com/ministryplatform.
+With MP admin credentials navigate to your Ministry Platform page - example.ministryplatform.com/ministryplatform.
  - Administration -> API Clients -> New
  - Fill out the following fields
- -- Display Name: MP Events
- -- Client ID: mpevents
- -- Client Secret: *come up with something secure*
- -- Client User: apiuser
- -- Authentication Flow: Client Credentials
+    - Display Name: MP Events
+    - Client ID: mpevents
+    - Client Secret: *come up with something secure*
+    - Client User: apiuser
+    - Authentication Flow: Client Credentials
  ### Webhook
 - Administration -> Webhooks -> New
 - Fill out the following fields
--- Name: MP-Events Webhook
--- HTTP Method: Post
--- URI: *your mp-events public domain*/api/update -- https://events.example.com/api/update
--- Body Template: { "auth": "*come up with something secure*" }
--- Headers Template: Content-Type: application/json
--- Table Name: Events
+    - Name: MP-Events Webhook
+    - HTTP Method: Post
+    - URI: *your mp-events public domain*/api/update -- https://events.example.com/api/update
+    - Body Template: { "auth": "*come up with something secure*" }
+    - Headers Template: Content-Type: application/json
+    - Table Name: Events
 
 
 ## Notes
-There are many things outside of the scope of this document that need to be configured to make your MP-Events Calendar public.  We use Digital Ocean at Alpharetta Methodist.  You can support this project and get $100 in credits to host your own by creating an account using this link: 
+There are many things outside of the scope of this document that need to be configured to make your MP-Events Calendar public.  We use Digital Ocean at Alpharetta Methodist.  You can support this project and get $100 in credits to host your own by creating an account using this link:
+<br>
 [![DigitalOcean Referral Badge](https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%202.svg)](https://www.digitalocean.com/?refcode=145f79cd503d&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
+<br>
 Here are some helpful resources from Digital Ocean: 
 - Web Server Hosting
 - DNS and subdomains
