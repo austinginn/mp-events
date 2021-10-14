@@ -17,7 +17,7 @@
 
 
   <!-- <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css'> -->
-  
+
 
   <style>
     @import url(https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap);
@@ -252,7 +252,7 @@
     }
 
     .display-none {
-      display: none;
+      display: none !important;
     }
 
     .search {
@@ -435,6 +435,7 @@
       text-align: center;
       width: 100%;
     }
+
     #no-results h2 {
       font-size: 2rem;
       font-weight: 400;
@@ -875,25 +876,25 @@
       //clear events
       $('#event-list-results').empty();
       console.log(results.length);
-      if(results.length == 0){
+      if (results.length == 0) {
         $('#event-list-results').html('<span id="no-results"><h2>No Results</h2></span>');
       } else {
-         //append html event section
-      $('#event-list-results').html('<tbody id="events-table-results" class="events-table"></tbody>');
-      
+        //append html event section
+        $('#event-list-results').html('<tbody id="events-table-results" class="events-table"></tbody>');
 
 
-      for (var i = 0; i < results.length; i++) {
-        var startT = new Date(results[i].Event_Start_Date);
-        var endT = new Date(results[i].Event_End_Date);
-        $('#events-table-results').append('<tr class="event" id="event_result' + i + '" data-eid="' + results[i].Event_ID + '"></tr>');
-        // $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].Event_Title + '</span><br><span>' + eArr[i].Meeting_Instructions + '</span><br><span>' + startT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + ' - ' + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + '</span></td>');
-        $('#event_result' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + results[i].Event_Title + '</span><br><span>' + nullFix(results[i].Meeting_Instructions) + '</span><br><span>' + startT.toDateString() + '</span><br><span>' + results[i].est + '</span></td>');
-        // console.log("TZ Mods: " + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}));
-        // console.log("TZ No Mods: " + endT.toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"}));
+
+        for (var i = 0; i < results.length; i++) {
+          var startT = new Date(results[i].Event_Start_Date);
+          var endT = new Date(results[i].Event_End_Date);
+          $('#events-table-results').append('<tr class="event" id="event_result' + i + '" data-eid="' + results[i].Event_ID + '"></tr>');
+          // $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].Event_Title + '</span><br><span>' + eArr[i].Meeting_Instructions + '</span><br><span>' + startT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + ' - ' + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + '</span></td>');
+          $('#event_result' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + results[i].Event_Title + '</span><br><span>' + nullFix(results[i].Meeting_Instructions) + '</span><br><span>' + startT.toDateString() + '</span><br><span>' + results[i].est + '</span></td>');
+          // console.log("TZ Mods: " + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}));
+          // console.log("TZ No Mods: " + endT.toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"}));
+        }
       }
-      }
-     
+
       $(".container").addClass("display-none");
       $("#myHeader").addClass("display-none");
       $("#events-container").addClass("display-none");
