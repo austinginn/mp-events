@@ -9,19 +9,20 @@ Features:
  - Custom dark and light themes
  - ICS hosting
  - ICS calendar invites
+ - Admin portal for creating custom themes and enabling features -- /admin
 
 A running example: [events.afumc.org](events.afumc.org) 
 
 ## Installation
 ### Method #1 (docker)
 ```
-docker build https://github.com/austinginn/mp-events.git
+docker build -t mp-events https://github.com/austinginn/mp-events.git
 nano .env
 ```
 See [.env section](#env) for creating your environment variables.
 
 ```
-docker ps
+docker run --env-file ./.env -p 3000:3000 -d --name mp-events mp-events
 ```
 
 ### Method #2 (node)
@@ -50,13 +51,14 @@ Modify it with the following variables:
 |--|--|
 | CLIENT_ID | Ministry Platform API Client ID (see [MP Configuration](#MP)) |
 | CLIENT_SECRET | Ministry Platform API Client Secret (see [MP Configuration](#MP)) |
-| CLIENT_SECRET | Ministry Platform API Client Secret (see [MP Configuration](#MP)) |
 | ROOT | your subdomain that comes before the ministryplatform.com domain -- example.ministryplatform.com 
-| EMAIL_HOST | smtp server for your email host
-| EMAIL_PORT | smtp server port 
-| EMAIL_SECURE | |
+| EMAIL_HOST | SMTP server for your email host
+| EMAIL_PORT | SMTP server port 
+| EMAIL_SECURE | True for port 465, false for other ports |
 | EMAIL_USER | Email user name (typically noreply@example.com)
 | EMAIL_SECRET | Email password
+| PORTAL_SECRET | Password used to access admin portal -- events.example.com/admin
+| UPDATE_SECRET | Secret used for webhook (see [MP Configuration](#MP))
 
 Your final .env file should look something like this:
 ```
@@ -68,6 +70,8 @@ EMAIL_PORT=443
 EMAIL_SECURE=false
 EMAIL_USER=noreply@example.com
 EMAIL_SECRET=noreplypassword
+PORTAL_SECRET=averysecurepassword
+UPDATE_SECRET=averysecuresecretforwebhook
 ```
 *This file contains sensitive information.  DO NOT push to a public repository.
 
