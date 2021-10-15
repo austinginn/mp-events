@@ -11,7 +11,7 @@ Features:
  - ICS calendar invites
  - Admin portal for creating custom themes and enabling features -- /admin
 
-A running example: [events.afumc.org](events.afumc.org) 
+A running example: [events.afumc.org](https://events.afumc.org) 
 
 ## Installation
 ### Method #1 (docker)
