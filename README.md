@@ -92,7 +92,7 @@ With MP admin credentials navigate to your Ministry Platform page - example.mini
     - Name: MP-Events Webhook
     - HTTP Method: Post
     - URI: *your mp-events public domain*/api/update -- https://events.example.com/api/update
-    - Body Template: { "auth": "*come up with something secure*" }
+    - Body Template: { "auth": "*come up with something secure*" } -- this should match .env UPDATE_SECRET from [env section](#env)
     - Headers Template: Content-Type: application/json
     - Table Name: Events
 
@@ -103,9 +103,9 @@ There are many things outside of the scope of this document that need to be conf
 [![DigitalOcean Referral Badge](https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%202.svg)](https://www.digitalocean.com/?refcode=145f79cd503d&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
 <br>
 Here are some helpful resources from Digital Ocean: 
-- Web Server Hosting
-- DNS and subdomains
-- HTTPS and SSL Certs
+- [Nodejs Digital Ocean Droplet](https://marketplace.digitalocean.com/apps/nodejs#getting-started)
+- [DNS and subdomains](https://docs.digitalocean.com/products/networking/dns/how-to/add-subdomain/)
+- [HTTPS and SSL Certs](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-20-04)
 # Credit
 Created and maintained by [Austin Ginn](https://github.com/austinginn) for [Alpharetta Methodist](afumc.org) 
 - Icons by [fontawesome](https://fontawesome.com/)
