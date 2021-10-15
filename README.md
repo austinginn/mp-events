@@ -18,7 +18,7 @@ A running example: [events.afumc.org](events.afumc.org)
 docker build https://github.com/austinginn/mp-events.git
 nano .env
 ```
-See .env section for creating your environment variables.
+See [.env section](#env) for creating your environment variables.
 
 ```
 docker ps
@@ -38,6 +38,7 @@ Once environment variables are configured:
 npm start
 ```
 ## Environment Variables
+<a name="env"></a>
 Create a .env file:
 ```
 nano .env
