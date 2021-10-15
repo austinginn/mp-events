@@ -32,13 +32,15 @@ cd mp-events
 npm install
 nano .env
 ```
-See .env section for creating your environment variables.
+See [.env section](#env) for creating your environment variables.
 Once environment variables are configured:
 ```
 npm start
 ```
-## Environment Variables
+
 <a name="env"></a>
+## Environment Variables
+
 Create a .env file:
 ```
 nano .env
@@ -46,11 +48,11 @@ nano .env
 Modify it with the following variables:
 | Key  | Description  |
 |--|--|
-| CLIENT_ID | Ministry Platform API Client ID (see MP Configuration) |
-| CLIENT_SECRET | Ministry Platform API Client Secret (see MP Configuration) |
-| CLIENT_SECRET | Ministry Platform API Client Secret (see MP Configuration) |
+| CLIENT_ID | Ministry Platform API Client ID (see [MP Configuration](#MP)) |
+| CLIENT_SECRET | Ministry Platform API Client Secret (see [MP Configuration](#MP)) |
+| CLIENT_SECRET | Ministry Platform API Client Secret (see [MP Configuration](#MP)) |
 | ROOT | your subdomain that comes before the ministryplatform.com domain -- example.ministryplatform.com 
-| EMAIL_HOST | smtp server for your email host (required if ICS_EMAIL is set to true)
+| EMAIL_HOST | smtp server for your email host
 | EMAIL_PORT | smtp server port 
 | EMAIL_SECURE | |
 | EMAIL_USER | Email user name (typically noreply@example.com)
@@ -69,6 +71,7 @@ EMAIL_SECRET=noreplypassword
 ```
 *This file contains sensitive information.  DO NOT push to a public repository.
 
+<a name="MP"></a>
 ## Ministry Platform Configuration
 ### API Client
 With MP admin credentials navigate to your Ministry Platform page - example.ministryplatform.com/ministryplatform.
