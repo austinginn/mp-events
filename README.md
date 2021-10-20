@@ -10,6 +10,9 @@ Features:
  - ICS hosting
  - ICS calendar invites
  - Admin portal for creating custom themes and enabling features -- /admin
+ 
+ 
+ <img src="https://mp-events.nyc3.digitaloceanspaces.com/renders/Web%20Calendar%20render_3.gif"/>
 
 A running example: [events.afumc.org](https://events.afumc.org) 
 
