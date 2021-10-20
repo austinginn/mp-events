@@ -11,8 +11,7 @@ Features:
  - ICS calendar invites
  - Admin portal for creating custom themes and enabling features -- /admin
  
- 
- <img src="https://mp-events.nyc3.digitaloceanspaces.com/renders/Web%20Calendar%20render_3.gif"/>
+ <img src="https://mp-events.nyc3.digitaloceanspaces.com/renders/Web%20Calendar%20render_4.gif" width="200"/>  <img src="https://mp-events.nyc3.digitaloceanspaces.com/renders/Web%20Calendar%20Render_admin2.png" width="200"/> 
 
 A running example: [events.afumc.org](https://events.afumc.org) 
 
