@@ -7,7 +7,7 @@ Features:
  - Progressive Web App (PWA) compatibility
  - Offline caching
  - Custom dark and light themes
- - ICS hosting
+ - ICS hosting -- /api/ics
  - ICS calendar invites
  - Admin portal for creating custom themes and enabling features -- /admin
  
