@@ -541,7 +541,7 @@ function configServer(){
 			}
 		}
 	} catch(err){
-		debug(err);
+		debug("No config file. Creating one.");
 	}
 	//check to see if .env has email info
 	if(!process.env.EMAIL_HOST || !process.env.EMAIL_PORT || !process.env.EMAIL_USER || !process.env.EMAIL_SECRET){
