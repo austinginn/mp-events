@@ -63,13 +63,22 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const REFRESH_INTERVAL = 840000;
+    const HEARTBEAT = 1000;
     let config;
 
-    var socket = io();
+    var socket = io({
+      auth: {
+        token: globalToken
+      }
+    });
+
     setInterval(() => {
       refreshToken();
     }, REFRESH_INTERVAL);
-
+    
+    socket.on("error", (err) => {
+      console.log(err);
+    })
     socket.on('debug', function (msg) {
       appendConsole(msg);
       console.log(msg);

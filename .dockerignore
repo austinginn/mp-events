@@ -4,3 +4,4 @@ Dockerfile
 .dockerignore
 .env
 .sample-env
+config.json

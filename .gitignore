@@ -105,3 +105,6 @@ dist
 
 # Mac stuff
 .DS_Store
+
+# config stuff
+config.json

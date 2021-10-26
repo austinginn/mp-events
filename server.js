@@ -81,7 +81,7 @@ iot.on('connection', function(socket){
     console.log('socket.io client disconencted');
   });
 });
-// debug(process.env.CLIENT_ID + " " + process.env.CLIENT_SECRET + " " + process.env.ROOT);
+
 
 
 ///HTTP client listen on 3000
@@ -245,7 +245,7 @@ app.get("/auth/token", (req, res) => {
 });
 
 function generateAccessToken(user) {
-	return jwt.sign({user: user}, ACCESS_TOKEN_SECRET, { expiresIn: '5m' });
+	return jwt.sign({user: user}, ACCESS_TOKEN_SECRET, { expiresIn: '1m' });
 }
 
 app.delete("/auth/logout", (req, res) => {
@@ -306,12 +306,6 @@ function authenticateToken(req, res, next){
 	})
 
 }
-
-function authenticateTokenIO(req, res, next){
-	//authentication for socket.io
-
-}
-
 async function asyncEvents(){
 	var newE = [];
 	var nevents = await test.getEvents();
