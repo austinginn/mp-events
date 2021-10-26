@@ -38,7 +38,7 @@ const toCache = [
   '/static/js/pwa.webmanifest',
   '/static/images/splash-screen.png',
   '/static/css/all.min.css',
-  '/static/css/all/portal.css',
+  '/static/css/portal.css',
   '/static/js/jquery-3.6.0.min.js'
 ];
 
