@@ -36,8 +36,6 @@ const REFRESH_TOKEN_SECRET = crypto.randomBytes(64).toString('hex');
 
 
 
-
-
 var test = new MP(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.ROOT);
 var events = [];
 var cal = "";
@@ -51,23 +49,24 @@ var highCostLimiter = new FastRateLimit({
 
 //Default Server Config
 var WEB_TITLE = "Events";
-var META_DESCRIPTION = "This is a test";
+var META_DESCRIPTION = "default meta description";
 var ICS_ENABLED = true;
 var ICS_EMAIL = true;
 var WEBHOOK_UPDATE = true;
 var SCHEDULED_UPDATE = true;
 var DEBUG_PORTAL = true;
 var LIGHT_THEME = {
-    "text": "#00000",
-    "background": "#fff",
-    "header": "#024873"
+    "text": "#000000",
+    "background": "#ffffff",
+    "header": "#25aaad"
 };
 var DARK_THEME = {
-	"text": "#fff",
-	"background": "#000",
-	"header": "#024873"
+	"text": "#ffffff",
+	"background": "#303030",
+	"header": "#25aaad"
 }
 var LAST_SYNCED = Date.now();
+var ICS_EMAIL_ERROR = false;
 
 let refreshTokens = [];
 
@@ -195,11 +194,17 @@ app.post("/api/submit/config", authenticateToken, (req, res) => {
 	// console.log("here");
 	WEB_TITLE = req.body.title;
 	ICS_ENABLED = toB(req.body.ics);
-	ICS_EMAIL = toB(req.body.email);
+	if(!ICS_EMAIL_ERROR){
+		ICS_EMAIL = toB(req.body.email);
+	} else {
+		debug("Cannot enable ics email features -- check for missing variables in .env");
+	}
+	
 	WEBHOOK_UPDATE = toB(req.body.webhook);
 	LIGHT_THEME = req.body.light_theme;
 	DARK_THEME = req.body.dark_theme;
 	res.json("200");
+	writeServerConfig();
 });
 
 
@@ -214,7 +219,7 @@ app.post("/auth/login", (req, res) => {
 	//research timing attacks and do i need bcrypt?
 	if(req.body.password == process.env.PORTAL_SECRET){
 		const accessToken = generateAccessToken(req.body.user);
-		const refreshToken = jwt.sign(req.body.user, REFRESH_TOKEN_SECRET);
+		const refreshToken = jwt.sign({user: req.body.user}, REFRESH_TOKEN_SECRET, { expiresIn: '12h' });
 		refreshTokens.push(refreshToken);
 		res.cookie("refresh", refreshToken, { httpOnly: true });
 		res.json({ accessToken: accessToken });
@@ -234,7 +239,7 @@ app.get("/auth/token", (req, res) => {
 	} 
 	jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, (err, user) => {
 		if(err) return res.sendStatus(403);
-		const accessToken = generateAccessToken({name: user.name});
+		const accessToken = generateAccessToken({user: user.name});
 		res.json({ accessToken: accessToken});
 	})
 });
@@ -478,53 +483,79 @@ function convertToICSDate(dateT) {
 			 return year + month + day + "T" + hours + minutes + "00" + "Z";
 }
 
-function configServer(){
-	const config = JSON.parse(fs.readFileSync(_dirname + '/config.json', 'utf8'));
-	if(config){
-		if(config.title){
-			WEB_TITLE = config.title;
-		}
-		if(config.meta_description){
-			META_DESCRIPTION = config.meta_description;
-		}
-		if(config.ics){
-			ICS_ENABLED = config.ics;
-		}
-		if(config.ics_email){
-			ICS_EMAIL = config.ics_email;
-		}
-		if(config.webhook_update){
-			WEBHOOK_UPDATE = config.webhook_update;
-		}
-		if(config.scheduled_update){
-			SCHEDULED_UPDATE = config.scheduled_update;
-		}
-		if(config.debug_portal){
-			DEBUG_PORTAL = config.debug_portal;
-		}
-		if(config.light_theme){
-			if(config.light_theme.text){
-				LIGHT_THEME.text = config.light_theme.text;
-			}
-			if(config.light_theme.background){
-				LIGHT_THEME.background = config.light_theme.background;
-			}
-			if(config.light_theme.header){
-				LIGHT_THEME.header = config.light_theme.header;
-			}
-		}
-		if(config.dark_theme){
-			if(config.dark_theme.text){
-				DARK_THEME.text = config.dark_theme.text;
-			}
-			if(config.dark_theme.background){
-				DARK_THEME.background = config.dark_theme.background;
-			}
-			if(config.dark_theme.header){
-				DARK_THEME.header = config.dark_theme.header;
-			}
-		}
+function writeServerConfig(){
+	const config = {
+		"title": WEB_TITLE,
+		"meta_description": META_DESCRIPTION,
+		"ics": ICS_ENABLED,
+		"ics_email": ICS_EMAIL,
+		"webhook_update": WEBHOOK_UPDATE,
+		"scheduled_update": SCHEDULED_UPDATE,
+		"debug_portal": DEBUG_PORTAL,
+		"light_theme": LIGHT_THEME,
+		"dark_theme": DARK_THEME
 	}
+	fs.writeFileSync(_dirname + '/config.json', JSON.stringify(config), 'utf-8');
+}
+
+function configServer(){
+	try{
+		const config = JSON.parse(fs.readFileSync(_dirname + '/config.json', 'utf8'));
+		if(config){
+			if(config.title != null){
+				WEB_TITLE = config.title;
+			}
+			if(config.meta_description != null){
+				META_DESCRIPTION = config.meta_description;
+			}
+			if(config.ics != null){
+				ICS_ENABLED = config.ics;
+			}
+			if(config.ics_email != null){
+				ICS_EMAIL = config.ics_email;
+			}
+			if(config.webhook_update != null){
+				WEBHOOK_UPDATE = config.webhook_update;
+			}
+			if(config.scheduled_update != null){
+				SCHEDULED_UPDATE = config.scheduled_update;
+			}
+			if(config.debug_portal != null){
+				DEBUG_PORTAL = config.debug_portal;
+			}
+			if(config.light_theme != null){
+				if(config.light_theme.text){
+					LIGHT_THEME.text = config.light_theme.text;
+				}
+				if(config.light_theme.background != null){
+					LIGHT_THEME.background = config.light_theme.background;
+				}
+				if(config.light_theme.header != null){
+					LIGHT_THEME.header = config.light_theme.header;
+				}
+			}
+			if(config.dark_theme != null){
+				if(config.dark_theme.text != null){
+					DARK_THEME.text = config.dark_theme.text;
+				}
+				if(config.dark_theme.background != null){
+					DARK_THEME.background = config.dark_theme.background;
+				}
+				if(config.dark_theme.header != null){
+					DARK_THEME.header = config.dark_theme.header;
+				}
+			}
+		}
+	} catch(err){
+		debug(err);
+	}
+	//check to see if .env has email info
+	if(!process.env.EMAIL_HOST || !process.env.EMAIL_PORT || !process.env.EMAIL_USER || !process.env.EMAIL_SECRET){
+		debug("Missing email config in .env -- ics email features will be disabled");
+		ICS_EMAIL = false;
+		ICS_EMAIL_ERROR = true;
+	}
+	writeServerConfig();
 	ready = true;
 	return 0;
 }
