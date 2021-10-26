@@ -39,7 +39,11 @@ const toCache = [
   '/static/images/splash-screen.png',
   '/static/css/all.min.css',
   '/static/css/portal.css',
-  '/static/js/jquery-3.6.0.min.js'
+  '/static/js/jquery-3.6.0.min.js',
+  //webfonts
+  '/static/webfonts/fa-solid-900.woff',
+  '/static/webfonts/fa-solid-900.woff2',
+  '/static/webfonts/fa-solid-900.ttf',
 ];
 
 self.addEventListener('install', function(event) {
