@@ -6,117 +6,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Alpharetta Methodist event calendar using Ministry Platform database">
   <link rel="shortcut icon" type="image/png" href="/static/images/favicon.png" />
-  <title>Events | Login</title>
+  <title>Events | Admin Portal</title>
+
 
   <link rel="stylesheet" href="/static/css/portal.css" />
+  <!-- <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css'> -->
+
+
+</head>
 
 <body>
-  <div id="loadOverlay" style="background-color:#333; position:absolute; top:0px; left:0px; width:100%; height:100%; z-index:2000;"></div>
-  <div class="wrapper flex_box">
-    <div class="centered">
-    <form >
-      <h1>Admin Portal</h1>
-      <div class="colors">
-        <h2>Light Theme</h2>
-        <div class=columns>
-          <div class="column1">
-            <span>Accent color:</span><br>
-            <span>Text color:</span><br>
-            <span>Background color:</span><br>
-          </div>
-          <div class="column">
-            <input class="input_color" id="light_aColor" type="color"><br>
-            <input class="input_color" id="light_tColor" type="color"><br>
-            <input class="input_color" id="light_bColor" type="color"><br>
-          </div>
-        </div>
-        <h2>Dark Theme</h2>
-        <div class=columns>
-          <div class="column1">
-            <span>Accent color:</span><br>
-            <span>Text color:</span><br>
-            <span>Background color:</span><br>
 
-          </div>
-          <div class="column">
-            <input class="input_color" id="dark_aColor" type="color"><br>
-            <input class="input_color" id="dark_tColor" type="color"><br>
-            <input class="input_color" id="dark_bColor" type="color"><br>
-          </div>
-        </div>
-      </div>
+  <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
 
-      <h2>Options</h2>
-      <div class="options">
-        <div class=columns>
-          <div class="column1">
-            <span>ICS Calendar: </span><br>
-            <span>ICS Email: </span><br>
-            <span>Webhook Update: </span><br>
-          </div>
-          <div class="column">
-            <input id="ics" type="checkbox"><br>
-            <input id="ics_email" type="checkbox"><br>
-            <input id="webhook" type="checkbox"><br>
-          </div>
-          
-        </div>
-      </div>
-      <div id="title">
-        <span>Title:</span> <input id="web_title" type="text"><br>
-      </div>
-      
-      
+  <!-- Content -->
 
-      <div class="button_wrapper">
-        <i class="loading icn-spinner hidden fas fa-spinner"></i>
-        <button id="button">save config</button>
-        <button id="logout"><i class="fas fa-sign-out-alt"></i></button>
-      </div>
-      
-      <div id="ls">Events synced from MP:</div>
-    </form>
-  </div>
+
+  <div id="content">
+    <!-- Title -->
+    <i id="logout" class="fas fa-sign-out-alt"></i>
+    <h1>Server Config</h1>
+
+    <h3>Light Theme</h3>
+    ****Accent color: <input id="light_aColor" type="color"><br>
+    ******Text color: <input id="light_tColor" type="color"><br>
+    Background color: <input id="light_bColor" type="color"><br>
+    <br>
+    <h3>Dark Theme</h3>
+    ****Accent color: <input id="dark_aColor" type="color"><br>
+    ******Text color: <input id="dark_tColor" type="color"><br>
+    Background color: <input id="dark_bColor" type="color"><br>
+    <br>
+    <h3>Options</h3>
+    ***ICS Caledar: <input id="ics" type="checkbox"><br>
+    *****ICS Email: <input id="ics_email" type="checkbox"><br>
+    Webhook Update: <input id="webhook" type="checkbox"><br>
+    <br>
+    Title: <input id="web_title" type="text"><br>
+    <br>
+    <span id="button" class="noselect">update config</span><i class="loading icn-spinner hidden fas fa-spinner"></i>
+    <br>
+    <br>
+
+    <div id="console">
+      <h2>Debug</h2>
+      <div id="window"></div>
+    </div>
+    <div id="ls">Events synced from MP:</div>
+
+
+
   </div>
 
-  <!-- <div class="sign">
-    by Austin Ginn / <a href="http://www.afumc.org">afumc.org</a>
-  </div> -->
   <link rel='stylesheet' href='/static/css/all.min.css'>
   <script src='/static/js/jquery-3.6.0.min.js'></script>
   <script src="/socket.io/socket.io.js"></script>
-
-
   <script>
+    const REFRESH_INTERVAL = 840000;
+    const HEARTBEAT = 1000;
+    let config;
 
-
-
-const element2 = document.querySelector('form');
-    element2.addEventListener('submit', event => {
-      event.preventDefault();
-      // actual logic, e.g. validate the form
+    var socket = io({
+      auth: {
+        token: globalToken
+      }
     });
 
-    // $(document).keypress(() => {
-    //   $('input[type="password"]').css("background-color", "#212121");
-    // })
-
-    function debug(){
-      $.ajax
-        ({
-          type: "GET",
-          url: "/api/data/debug",
-          beforeSend: function (xhr) {
-            xhr.setRequestHeader("Authorization", "Bearer " + globalToken);
-          },
-          success: function (data, status, request, xhr) {
-            console.log(data);
-          },
-          error: function (data, status, request, xhr) {
-            console.log('access expired -- trying to get a new token');
-          }
-        });
-    }
+    setInterval(() => {
+      refreshToken();
+    }, REFRESH_INTERVAL);
+    
+    socket.on("error", (err) => {
+      console.log(err);
+    })
+    socket.on('debug', function (msg) {
+      appendConsole(msg);
+      console.log(msg);
+    });
 
     $.get("../api/data/config", function (data) {
       console.log(data);
@@ -244,7 +210,10 @@ const element2 = document.querySelector('form');
         });
     }
 
+    $(document).ready(function () {
+      //button click
 
+    });
 
 
     function appendConsole(msg) {
@@ -280,7 +249,11 @@ const element2 = document.querySelector('form');
             });
     }
 
-
   </script>
+
+
+
+
+</body>
 
 </html>

@@ -31,6 +31,7 @@ const MP = require("./mp-events.js");
 const fs = require('fs');
 const Mail = require('nodemailer/lib/mailer');
 
+
 const ACCESS_TOKEN_SECRET = crypto.randomBytes(64).toString('hex');
 const REFRESH_TOKEN_SECRET = crypto.randomBytes(64).toString('hex');
 
@@ -69,18 +70,49 @@ var LAST_SYNCED = Date.now();
 var ICS_EMAIL_ERROR = false;
 
 let refreshTokens = [];
+let debug_arr = [];
 
 //socket io
 ///sockets init
 const iot = require('socket.io')(server);
+// const socketioJWT = require('socketio-jwt');
+// const { isObject } = require('util');
 ////Socket Init////
-iot.on('connection', function(socket){
-  console.log('socket.io client connected');
 
-  socket.on('disconnect', function(){
-    console.log('socket.io client disconencted');
-  });
-});
+// // set authorization for socket.io
+// iot.sockets
+//   .on('connection', socketioJWT.authorize({
+//     secret: ACCESS_TOKEN_SECRET,
+//     timeout: 15000 // 15 seconds to send the authentication message
+//   }))
+//   .on('authenticated', (socket) => {
+//     //this socket is authenticated, we are good to handle more events from it.
+//     console.log(`hello! ${socket.decoded_token.name}`);
+//   });
+
+// iot.sockets
+// .on('connection', socketioJWT.authorize({
+//     secret: ACCESS_TOKEN_SECRET,
+//     timeout: 15000 // 15 seconds to send the authentication message
+//   })).on('authenticated', function(socket) {
+//     //this socket is authenticated, we are good to handle more events from it.
+// 	console.log('socket.io client connected');
+//     console.log(`Hello! ${socket.decoded_token.name}`);
+// 	iot.emit('debug', debug_arr);
+
+// 	socket.on('disconnect', function(){
+// 		console.log('socket.io client disconencted');
+// 	  });
+//   });
+
+// iot.on('connection', function(socket){
+//   console.log('socket.io client connected');
+//   iot.emit('debug', debug_arr);
+
+//   socket.on('disconnect', function(){
+//     console.log('socket.io client disconencted');
+//   });
+// });
 
 
 
@@ -130,6 +162,19 @@ app.get("/api/data/config", (req, res) => {
 	})
 	
 });
+
+app.get("/api/data/debug", authenticateToken, (req, res) => {
+	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
+	.then(() => {
+		res.send(debug_arr);
+	})
+	.catch(() => {
+		debug("All tokens consumed by " + req.ip);
+	})
+	
+});
+
+
 
 
 app.get("/api/data", (req, res) => {
@@ -574,12 +619,13 @@ function ipTrack(ip){
 function debug(msg){
 	//console
 	console.log(msg);
+	if(debug_arr.length >= 100){
+		debug_arr.shift();
+	}
+	debug_arr.push({ ts: Date.now(), log: msg });
 
 	//socket.io
-	iot.emit('debug', msg);
-
-	//fs
-	//not implemented yet
+	// iot.emit('debug', { ts: Date.now(), log: msg });
 }
 
 
@@ -610,7 +656,7 @@ async function main(rec, event, callback) {
   
 	// send mail with defined transport object
 	let info = await transporter.sendMail({
-	  from: '"YEET 👻" <aginn@afumc.org>', // sender address
+	  from: '"no-reply" <' + process.env.EMAIL_USER + '>', // sender address
 	  to: rec, // list of receivers
 	  subject: "🗓 Add " + event.Event_Title + " to your calendar", // Subject line
 	  text: "Hello! Here is the calendar event you requested: \r\n\r\n" + event.Event_Title + "\r\n" + event.Meeting_Instructions + 
@@ -626,7 +672,7 @@ async function main(rec, event, callback) {
 	  }
 	});
   
-	console.log("Message sent: %s", info.messageId);
+	debug("Message sent: %s", info.messageId);
 	callback();
   }
 
