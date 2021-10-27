@@ -1,10 +1,10 @@
 CLIENT_ID=your_minitsry_platform_api_client_id
 CLIENT_SECRET=your_minitsry_platform_api_secret
 ROOT=the subdomain from your ministry platform link -- example.ministryplatform.com would be example
-EMAIL_HOST=""
-EMAIL_PORT=""
-EMAIL_SECURE=""
-EMAIL_USER=""
-EMAIL_SECRET=""
-DEBUG_SECRET=""
-UPDATE_SECRET=""
+EMAIL_HOST=SMTP server for your email host
+EMAIL_PORT=SMTP server port
+EMAIL_SECURE=True for port 465, false for other ports
+EMAIL_USER=Email user name (typically noreply@example.com)
+EMAIL_SECRET=Email password
+PORTAL_SECRET=Password used to access admin portal -- events.example.com/admin
+UPDATE_SECRET=Secret used for webhook (see MP Configuration)
