@@ -8,7 +8,7 @@
 - [x] add static files to pwa cache
 - [x] fix iphone pwa icon
 - [x] make pwa theme more standard color
-- [ ] socket io jwt
+- [x] debug function
 - [x] save/load server config from file in case of restart
 - [x] debug cache
 
