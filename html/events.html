@@ -573,7 +573,7 @@
       console.log("NO INTERNET CONNECTION");
       $(".connection").removeClass("display-none");
       config = JSON.parse(myStorage.getItem('config'));
-      console.log(config);
+      // console.log(config);
       $("#title").text(config.title);
 
       //set colors
@@ -594,10 +594,10 @@
       ready("themes");
     } else {
       $.get("api/data/config", function (data) {
-        console.log(data);
+        // console.log(data);
         config = data;
         myStorage.setItem('config', JSON.stringify(data));
-        console.log(JSON.parse(myStorage.getItem('config')));
+        // console.log(JSON.parse(myStorage.getItem('config')));
         $("#title").text(config.title);
 
         //set colors
@@ -637,14 +637,14 @@
     if (!navigator.onLine) {
       events = JSON.parse(myStorage.getItem('events'));
       console.log("NO INTERNET CONNECTION");
-      console.log(events);
+      // console.log(events);
 
       const date = new Date();
 
       const renderCalendar = () => {
-        console.log("Calendar Render");
+        // console.log("Calendar Render");
         date.setDate(1);
-        console.log(date);
+        // console.log(date);
 
         const monthDays = document.querySelector(".days");
 
@@ -698,11 +698,11 @@
         for (let i = 1; i <= lastDay; i++) {
           if (i === new Date().getDate() && date.getMonth() === new Date().getMonth()) {
             days += `<div class="today dview">${i}</div>`;
-            console.log("found current date: " + i);
+            //console.log("found current date: " + i);
             //load events based on current date
             loadEvents(i, date.getMonth() + 1, date.getFullYear());
           } else {
-            console.log("adding day: " + i);
+            //console.log("adding day: " + i);
             days += `<div class="dview">${i}</div>`;
           }
           monthDays.innerHTML = days;
@@ -729,7 +729,7 @@
 
     } else {
       $.get("api/data", function (data) {
-        console.log(data);
+        //console.log(data);
         events = data;
         myStorage.setItem('events', JSON.stringify(data));
         // $('document').ready(function () {
@@ -743,9 +743,9 @@
         const date = new Date();
 
         const renderCalendar = () => {
-          console.log("Calendar Render");
+          //console.log("Calendar Render");
           date.setDate(1);
-          console.log(date);
+          //console.log(date);
 
           const monthDays = document.querySelector(".days");
 
@@ -799,11 +799,11 @@
           for (let i = 1; i <= lastDay; i++) {
             if (i === new Date().getDate() && date.getMonth() === new Date().getMonth()) {
               days += `<div class="today dview">${i}</div>`;
-              console.log("found current date: " + i);
+              //console.log("found current date: " + i);
               //load events based on current date
               loadEvents(i, date.getMonth() + 1, date.getFullYear());
             } else {
-              console.log("adding day: " + i);
+              //console.log("adding day: " + i);
               days += `<div class="dview">${i}</div>`;
             }
             monthDays.innerHTML = days;
@@ -834,9 +834,9 @@
 
 
     function loadEvents(day, month, year) {
-      console.log(day + "/" + month + "/" + year);
+      //console.log(day + "/" + month + "/" + year);
       var eventDate = new Date(year, month - 1, day);
-      console.log(eventDate);
+      //console.log(eventDate);
       var eArr = findEvents(eventDate);
 
       //clear events
@@ -854,8 +854,8 @@
         // console.log("TZ Mods: " + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}));
         // console.log("TZ No Mods: " + endT.toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"}));
       }
-      console.log("events added");
-      console.log(eArr);
+      //console.log("events added");
+      //console.log(eArr);
     }
 
     function loadFoundEvents(results) {
@@ -875,7 +875,7 @@
       ];
       //clear events
       $('#event-list-results').empty();
-      console.log(results.length);
+      //console.log(results.length);
       if (results.length == 0) {
         $('#event-list-results').html('<span id="no-results"><h2>No Results</h2></span>');
       } else {
@@ -904,7 +904,7 @@
 
       window.scrollTo(0, 0);
 
-      console.log("events added");
+      //console.log("events added");
       // console.log(eArr);
     }
 
@@ -932,13 +932,13 @@
 
     function findEvents(eventDate) {
       var arr = [];
-      console.log(events.length);
+      //console.log(events.length);
       for (var i = 0; i < events.length; i++) {
         var indexDate = new Date(events[i].Event_Start_Date);
         //add date to events
 
         if (indexDate.getMonth() === eventDate.getMonth() && indexDate.getDate() === eventDate.getDate() && indexDate.getFullYear() === eventDate.getFullYear()) {
-          console.log("found event: " + events[i].Event_ID);
+          //console.log("found event: " + events[i].Event_ID);
           document.querySelector("#myHeader p").innerHTML = "Selected: " + indexDate.toDateString();
           arr.push(events[i]);
         }
@@ -955,7 +955,7 @@
     }
 
     function ready(msg) {
-      console.log("in ready");
+      //console.log("in ready");
       if (msg == "themes") {
         loaded.themes = true;
       } else {
@@ -964,7 +964,7 @@
 
       if (loaded.themes && loaded.events) {
         //show page
-        console.log("loaded");
+        //console.log("loaded");
         $("body").removeClass("hidden");
       }
     }
@@ -984,12 +984,12 @@
       if (!searching) {
         var months = ["January", "February", "March", "April", "May", "June",
           "July", "August", "September", "October", "November", "December"];
-        console.log("in .dview click");
+        //console.log("in .dview click");
 
         var selectedMonthIndex = months.indexOf($('.date h1').text());
-        console.log(selectedMonthIndex);
+        //console.log(selectedMonthIndex);
         // do something here
-        console.log("selected");
+        //console.log("selected");
         loadEvents($(this).text(), selectedMonthIndex + 1, $('.date p').text().substr($('.date p').text().length - 4));
       }
 
@@ -999,7 +999,7 @@
 
     $(document).on('click', '.prev-date', function () {
       if (!searching) {
-        console.log("in .prev-date click");
+        //console.log("in .prev-date click");
         $('.event-list').empty();
         $('.events-header p').empty();
       }
@@ -1007,7 +1007,7 @@
 
     $(document).on('click', '.next-date', function () {
       if (!searching) {
-        console.log("in .next-date click");
+        //console.log("in .next-date click");
         $('.event-list').empty();
         $('.events-header p').empty();
       }
@@ -1025,15 +1025,15 @@
 
       if (!searching) {
         event.stopPropagation();
-        console.log(event);
-        console.log(config.email);
+        //console.log(event);
+        //console.log(config.email);
         if (config.email) {
           searching = true;
           $(".app").addClass("blur");
           $("#add-event").removeClass("hidden display-none");
           $(".email-input").focus();
           selected = $(this).data("eid");
-          console.log($(this).data("eid"));
+          //console.log($(this).data("eid"));
         }
       }
 
@@ -1041,7 +1041,7 @@
 
     $(document).on('click', '.search', function (event) {
       event.stopPropagation();
-      console.log("in search click");
+      //console.log("in search click");
 
       if (!searching) {
         searching = true;
@@ -1054,21 +1054,21 @@
     $(document).on('click', '.search-form', function (event) {
       if (searching) {
         event.stopPropagation();
-        console.log("in search-form click");
+        //console.log("in search-form click");
       }
     });
 
     $(document).on('click', '.email-input', function (event) {
       if (searching) {
         event.stopPropagation();
-        console.log("in email-input click");
+        //console.log("in email-input click");
       }
     });
 
     $(document).on('click', '.search-input', function (event) {
       if (searching) {
         event.stopPropagation();
-        console.log("in search-input click");
+        //console.log("in search-input click");
       }
     });
 
@@ -1085,7 +1085,7 @@
     });
 
     $(document).on('click', 'html', function (e) {
-      console.log("in body click");
+      //console.log("in body click");
       if (searching) {
         searching = false;
         $(".app").removeClass("blur");
@@ -1098,7 +1098,7 @@
 
     $(".search-form").on('submit', function (e) {
       e.preventDefault();
-      console.log("searching for " + $(".search-input").val());
+      //console.log("searching for " + $(".search-input").val());
       //find
       find_events($(".search-input").val());
       $("html").trigger("click");
@@ -1106,7 +1106,7 @@
 
     $(".email-form").on('submit', function (e) {
       e.preventDefault();
-      console.log("sending invite link to " + $(".email-input").val());
+      //console.log("sending invite link to " + $(".email-input").val());
       //find
       send_email($(".email-input").val(), selected);
       $("html").trigger("click");
@@ -1115,7 +1115,7 @@
     $(".event").hover(console.log(this));
 
     function find_events(term) {
-      console.log(term);
+      //console.log(term);
       let search_results = []
       for (let i = 0; i < events.length; i++) {
         if (events[i].Event_Title.toLowerCase().includes(term.toLowerCase()) || nullFix(events[i].Meeting_Instructions).toLowerCase().includes(term.toLowerCase())) {
@@ -1127,7 +1127,7 @@
       let startIndex = 0;
       let currentDate = new Date();
       for (let i = 0; i < search_results.length && !flag; i++) {
-        console.log(search_results[i]);
+        //console.log(search_results[i]);
         // console.log(search_results[i].Event_Start_Date);
         let eventDate = new Date(search_results[i].Event_Start_Date);
         // if(currentDate.getMonth() == eventDate.getMonth() && currentDate.getDate() <= eventDate.getDate()){
@@ -1140,7 +1140,7 @@
         }
       }
       final_search_results = search_results.slice(startIndex);
-      console.log(final_search_results);
+      //console.log(final_search_results);
       loadFoundEvents(final_search_results);
     }
 
