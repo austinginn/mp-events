@@ -1,7 +1,7 @@
 
   
   self.addEventListener('fetch', function(event) {
-    console.log('used to intercept requests so we can check for the file or data in the cache');
+    //console.log('used to intercept requests so we can check for the file or data in the cache');
     event.respondWith(
         fetch(event.request)
           .catch(() => {
