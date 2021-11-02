@@ -32,6 +32,7 @@ On a server with node installed:
 ```
 git clone https://github.com/austinginn/mp-events.git
 cd mp-events
+git checkout stable
 npm install
 nano .env
 ```
