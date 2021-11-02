@@ -62,6 +62,7 @@ Modify it with the following variables:
 | EMAIL_SECRET | Email password
 | PORTAL_SECRET | Password used to access admin portal -- events.example.com/admin
 | UPDATE_SECRET | Secret used for webhook (see [MP Configuration](#MP))
+| STATS_EMAIL | Email where weekly stats will be sent to
 
 Your final .env file should look something like this:
 ```
@@ -75,6 +76,7 @@ EMAIL_USER=noreply@example.com
 EMAIL_SECRET=noreplypassword
 PORTAL_SECRET=averysecurepassword
 UPDATE_SECRET=averysecuresecretforwebhook
+STATS_EMAIL=example@example.com
 ```
 *This file contains sensitive information.  DO NOT push to a public repository.
 

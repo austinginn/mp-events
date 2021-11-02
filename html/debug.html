@@ -118,6 +118,23 @@ const element2 = document.querySelector('form');
         });
     }
 
+    function stats(){
+      $.ajax
+        ({
+          type: "GET",
+          url: "/api/data/stats",
+          beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", "Bearer " + globalToken);
+          },
+          success: function (data, status, request, xhr) {
+            console.log(data);
+          },
+          error: function (data, status, request, xhr) {
+            console.log('access expired -- trying to get a new token');
+          }
+        });
+    }
+
     $.get("../api/data/config", function (data) {
       console.log(data);
       config = data;

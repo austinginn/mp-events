@@ -29,7 +29,7 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 const MP = require("./mp-events.js");
 const fs = require('fs');
-const Mail = require('nodemailer/lib/mailer');
+// const Mail = require('nodemailer/lib/mailer');
 
 
 const ACCESS_TOKEN_SECRET = crypto.randomBytes(64).toString('hex');
@@ -71,6 +71,8 @@ var ICS_EMAIL_ERROR = false;
 
 let refreshTokens = [];
 let debug_arr = [];
+let stats_arr = [];
+let page_views = 0;
 
 //socket io
 ///sockets init
@@ -123,8 +125,14 @@ server.listen(3000, function(){
 	//configure server
 	configServer();
 	
-	//if scheduled update -- 24hr timer
 	asyncEvents();
+
+	//Weekly Stats
+	setInterval(() => {
+		sendStats();
+	}, 300000); //604800000
+
+
 
 	debug("Number of events loaded: " + events.length);
 });
@@ -142,6 +150,7 @@ app.get("/api/ics", (req, res) => {
 
 app.get("/", (req, res) => {
 		res.sendFile(_dirname + "/html/events.html");
+		page_views++;
 });
 
 app.get("/admin", authenticateToken, (req, res) => {
@@ -167,6 +176,17 @@ app.get("/api/data/debug", authenticateToken, (req, res) => {
 	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
 	.then(() => {
 		res.send(debug_arr);
+	})
+	.catch(() => {
+		debug("All tokens consumed by " + req.ip);
+	})
+	
+});
+
+app.get("/api/data/stats", authenticateToken, (req, res) => {
+	highCostLimiter.consume(ips[ipTrack(req.ip)].ip)
+	.then(() => {
+		res.send({ "page_views": page_views, "stats": stats_arr });
 	})
 	.catch(() => {
 		debug("All tokens consumed by " + req.ip);
@@ -202,7 +222,7 @@ app.post("/api/send", (req, res) => {
 		//token consumed
 		//okay to send
 		//add email to list
-		//do we need to make people confirm there email here?
+		//do we need to make people confirm their email here?
 		let f_event;
 		let found = false;
 		for(let i = 0; i < events.length && !found; i++){
@@ -214,6 +234,7 @@ app.post("/api/send", (req, res) => {
 		}
 
 		if(found){
+			stats(f_event);
 			main(req.body.email, f_event, () => {
 				res.send({"result": "success"});
 				return 0;
@@ -290,7 +311,7 @@ app.get("/auth/token", (req, res) => {
 });
 
 function generateAccessToken(user) {
-	return jwt.sign({user: user}, ACCESS_TOKEN_SECRET, { expiresIn: '5m' });
+	return jwt.sign({user: user}, ACCESS_TOKEN_SECRET, { expiresIn: '1m' });
 }
 
 app.delete("/auth/logout", (req, res) => {
@@ -672,7 +693,7 @@ async function main(rec, event, callback) {
 	  }
 	});
   
-	debug("Message sent: %s", info.messageId);
+	debug("Message sent: " + info.messageId);
 	callback();
   }
 
@@ -681,4 +702,55 @@ async function main(rec, event, callback) {
 		  return true;
 	  }
 	  return false;
+  }
+
+  function stats(event){
+	  let found = false;
+	  let index;
+	for(let i = 0; i < stats_arr.length && !found; i++){
+		if(stats_arr[i].event.Event_ID == event.Event_ID){
+			index = i;
+			found = true;
+			// console.log(events[i]);
+		}
+	}
+
+	if(found){
+		stats_arr[index].count++;
+	} else {
+		stats_arr.push({ count: 1, event: event });
+	}
+  }
+
+  async function sendStats(){
+	  let stat_text = "Events: \r\n";
+	  let emails_sent = 0;
+	  for(let i = 0; i < stats_arr.length; i++){
+		  emails_sent += stats_arr[i].count;
+		stat_text += stats_arr[i].event.Event_Title + " -- " + stats_arr[i].event.Event_ID + "\r\nEmails Sent: " + stats_arr[i].count + "\r\n\r\n";
+	  }
+		// create reusable transporter object using the default SMTP transport
+		let transporter = nodemailer.createTransport({
+			host: process.env.EMAIL_HOST,
+			port: process.env.EMAIL_PORT,
+			secure: toB(process.env.EMAIL_SECURE), // true for 465, false for other ports
+			auth: {
+			  user: process.env.EMAIL_USER, // generated ethereal user
+			  pass: process.env.EMAIL_SECRET, // generated ethereal password
+			},
+		  });
+
+		  	// send mail with defined transport object
+	let info = await transporter.sendMail({
+		from: '"no-reply" <' + process.env.EMAIL_USER + '>', // sender address
+		to: process.env.STATS_EMAIL, // list of receivers
+		subject: "🗓 Weekly MP-Events Stats", // Subject line
+		text: "# of Weekly Views: " + page_views  +
+			"\r\n\r\n# of Emails Sent: " + emails_sent +
+			"\r\n\r\n" + stat_text // plain text body
+	  });
+
+	  //reset stats
+	  page_views = 0;
+	  stats_arr = [];
   }
