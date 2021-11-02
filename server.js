@@ -290,7 +290,7 @@ app.get("/auth/token", (req, res) => {
 });
 
 function generateAccessToken(user) {
-	return jwt.sign({user: user}, ACCESS_TOKEN_SECRET, { expiresIn: '1m' });
+	return jwt.sign({user: user}, ACCESS_TOKEN_SECRET, { expiresIn: '5m' });
 }
 
 app.delete("/auth/logout", (req, res) => {
