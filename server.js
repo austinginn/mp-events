@@ -130,7 +130,7 @@ server.listen(3000, function(){
 	//Weekly Stats
 	setInterval(() => {
 		sendStats();
-	}, 300000); //604800000
+	}, 604800000); //604800000
 
 
 
