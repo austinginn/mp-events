@@ -1,8 +1,4 @@
 //Event calendar for integrating with a Ministry Platform database 
-//TODO
-//Debug
-///Add debug portal login and security
-///favicon upload in debug portal
 
 ///////
 require('dotenv').config();
@@ -31,11 +27,8 @@ const MP = require("./mp-events.js");
 const fs = require('fs');
 // const Mail = require('nodemailer/lib/mailer');
 
-
 const ACCESS_TOKEN_SECRET = crypto.randomBytes(64).toString('hex');
 const REFRESH_TOKEN_SECRET = crypto.randomBytes(64).toString('hex');
-
-
 
 var test = new MP(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.ROOT);
 var events = [];
@@ -68,6 +61,7 @@ var DARK_THEME = {
 }
 var LAST_SYNCED = Date.now();
 var ICS_EMAIL_ERROR = false;
+var STATS_EMAIL = false;
 
 let refreshTokens = [];
 let debug_arr = [];
@@ -121,20 +115,18 @@ const iot = require('socket.io')(server);
 ///HTTP client listen on 3000
 server.listen(3000, function(){
 	debug('listening on *:3000');
-	// main().catch(console.error);
-	//configure server
-	configServer();
 	
-	asyncEvents();
-
-	//Weekly Stats
-	setInterval(() => {
-		sendStats();
-	}, 604800000); //604800000
-
-
-
-	debug("Number of events loaded: " + events.length);
+	//configure server
+	configServer().then(() =>{
+		asyncEvents();
+			//Weekly Stats
+			debug("Weekly Stats: " + STATS_EMAIL);
+	if(STATS_EMAIL){
+		setInterval(() => {
+			sendStats();
+		}, 604800000); //604800000
+	}
+	});
 });
 
 app.get("/api/ics", (req, res) => { 
@@ -615,9 +607,18 @@ function configServer(){
 		ICS_EMAIL = false;
 		ICS_EMAIL_ERROR = true;
 	}
+
+	//check to see if .env has stats email
+	if(process.env.STATS_EMAIL){
+		//console.log("stats email set");
+		STATS_EMAIL = true;
+	}
 	writeServerConfig();
 	ready = true;
-	return 0;
+	return new Promise((resolve, reject) => {
+		resolve("finished");
+	})
+	
 }
 
 //ip address push and namespace
