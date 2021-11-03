@@ -10,6 +10,12 @@ Features:
  - ICS hosting -- /api/ics
  - ICS calendar invites
  - Admin portal for creating custom themes and enabling features -- /admin
+
+Experimental Features:
+
+ - Weekly statistics email
+ - Stats -- use stats(); in browser dev console
+ - Debug log -- use debug(); in browser dev console
  
  <img src="https://mp-events.nyc3.digitaloceanspaces.com/renders/Web%20Calendar%20render_4.gif" width="200"/>  <img src="https://mp-events.nyc3.digitaloceanspaces.com/renders/Web%20Calendar%20Render_admin3.png" width="200"/> 
 
@@ -62,7 +68,7 @@ Modify it with the following variables:
 | EMAIL_SECRET | Email password
 | PORTAL_SECRET | Password used to access admin portal -- events.example.com/admin
 | UPDATE_SECRET | Secret used for webhook (see [MP Configuration](#MP))
-| STATS_EMAIL | Email where weekly stats will be sent to
+| STATS_EMAIL | Email where weekly stats will be sent to (experimental feature)
 
 Your final .env file should look something like this:
 ```
