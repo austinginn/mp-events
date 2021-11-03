@@ -686,7 +686,7 @@ async function main(rec, event, callback) {
 		  dow[eDate.getDay()+1] + ", " + eDateMonth + "-" + eDate.getDate() + "-" + eDate.getFullYear() +
 		  "\r\n" + event.est + 
 		  "\r\n\r\nIf you email client does not prompt you to add the event to your calendar, open the attached .ics file." +
-		  "\r\n\r\nThank you,\r\nAlpharetta Methodist", // plain text body
+		  "\r\n\r\nThank you!", // plain text body
 	  icalEvent: {
 		  filename: event.Event_Title + ".ics",
 		  method: 'publish',
