@@ -280,10 +280,10 @@
       type: "GET",
       url: "/auth/token",
       success: function(){
-        console.log("you had a cookie");
+        // console.log("you had a cookie");
       },
       error: function (){
-        console.log("no cookie");
+        // console.log("no cookie");
       }
     });
 
@@ -310,9 +310,9 @@
     function login() {
       //grab form data
       let loginData = { "user": "admin", "password": $("#password").val() };
-      console.log(loginData);
+      //console.log(loginData);
       if (loginData.password == "") {
-        console.log("missing data");
+        //console.log("missing data");
         return -1;
       }
       //make post
@@ -323,10 +323,10 @@
           dataType: "json",
           data: loginData,
           success: function (data, status, request, xhr) {
-            console.log("success!");
+            //console.log("success!");
           },
           error: function () {
-            console.log('failure');
+            //console.log('failure');
             $('input[type="password"]').css("background-color", "#ff5842");
             $('#password').select();
           }
@@ -337,10 +337,10 @@
     })
 
     $(document).ajaxSuccess(function (event, xhr, settings) {
-      console.log(xhr.getResponseHeader("redirect"));
+      //console.log(xhr.getResponseHeader("redirect"));
       if (!xhr.responseJSON) { return -1 };
       if (xhr.responseJSON.accessToken) {
-        console.log("I got an access token");
+        //console.log("I got an access token");
         const accessToken = xhr.responseJSON.accessToken;
         globalToken = accessToken;
         $.ajax({
@@ -355,12 +355,12 @@
             newDoc.close();
           },
           error: function () {
-            console.log('something went wrong');
+            //console.log('something went wrong');
           }
         });
       }
       else {
-        console.log("i didnt :(");
+        //console.log("i didnt :(");
       }
     });
 
