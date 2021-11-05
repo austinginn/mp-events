@@ -682,8 +682,8 @@ async function main(rec, event, callback) {
 	  to: rec, // list of receivers
 	  subject: "🗓 Add " + event.Event_Title + " to your calendar", // Subject line
 	  text: "Hello! Here is the calendar event you requested: \r\n\r\n" + event.Event_Title + "\r\n" + event.Meeting_Instructions + 
-	  	"\r\n" + dow[sDate.getDay()+1] + ", " + sDateMonth + "-" + sDate.getDate() + "-" + sDate.getFullYear() + " to " +
-		  dow[eDate.getDay()+1] + ", " + eDateMonth + "-" + eDate.getDate() + "-" + eDate.getFullYear() +
+	  	"\r\n" + dow[sDate.getDay()] + ", " + sDateMonth + "-" + sDate.getDate() + "-" + sDate.getFullYear() + " to " +
+		  dow[eDate.getDay()] + ", " + eDateMonth + "-" + eDate.getDate() + "-" + eDate.getFullYear() +
 		  "\r\n" + event.est + 
 		  "\r\n\r\nIf you email client does not prompt you to add the event to your calendar, open the attached .ics file." +
 		  "\r\n\r\nThank you!", // plain text body
