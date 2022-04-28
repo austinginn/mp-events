@@ -729,8 +729,8 @@
 
     } else {
       $.get("api/data", function (data) {
-        //console.log(data);
-        events = data;
+        console.log(data);
+        events = data.events;
         myStorage.setItem('events', JSON.stringify(data));
         // $('document').ready(function () {
 
@@ -846,11 +846,11 @@
 
 
       for (var i = 0; i < eArr.length; i++) {
-        var startT = new Date(eArr[i].Event_Start_Date);
-        var endT = new Date(eArr[i].Event_End_Date);
-        $('#events-table').append('<tr class="event" id="event' + i + '" data-eid="' + eArr[i].Event_ID + '"></tr>');
-        // $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].Event_Title + '</span><br><span>' + eArr[i].Meeting_Instructions + '</span><br><span>' + startT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + ' - ' + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + '</span></td>');
-        $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].Event_Title + '</span><br><span>' + nullFix(eArr[i].Meeting_Instructions) + '</span><br><span>' + eArr[i].est + '</span></td>');
+        var startT = new Date(eArr[i].start);
+        var endT = new Date(eArr[i].end);
+        $('#events-table').append('<tr class="event" id="event' + i + '" data-eid="' + eArr[i].eventID + '"></tr>');
+        // $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].eventName + '</span><br><span>' + eArr[i].description + '</span><br><span>' + startT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + ' - ' + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + '</span></td>');
+        $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].eventName + '</span><br><span>' + nullFix(eArr[i].location) + '</span><br><span>' + timeParse(eArr[i].start.substr(11, 8)) + " - " + timeParse(eArr[i].end.substr(11, 8)) + '</span></td>');
         // console.log("TZ Mods: " + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}));
         // console.log("TZ No Mods: " + endT.toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"}));
       }
@@ -885,11 +885,16 @@
 
 
         for (var i = 0; i < results.length; i++) {
-          var startT = new Date(results[i].Event_Start_Date);
-          var endT = new Date(results[i].Event_End_Date);
-          $('#events-table-results').append('<tr class="event" id="event_result' + i + '" data-eid="' + results[i].Event_ID + '"></tr>');
-          // $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].Event_Title + '</span><br><span>' + eArr[i].Meeting_Instructions + '</span><br><span>' + startT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + ' - ' + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + '</span></td>');
-          $('#event_result' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + results[i].Event_Title + '</span><br><span>' + nullFix(results[i].Meeting_Instructions) + '</span><br><span>' + startT.toDateString() + '</span><br><span>' + results[i].est + '</span></td>');
+          var startT = new Date(results[i].start);
+          var endT = new Date(results[i].end);
+          let location = "";
+          for (let x = 0; x < results[i].spaces.length; x++) {
+            location += results[i].spaces[x];
+            location += " "
+          }
+          $('#events-table-results').append('<tr class="event" id="event_result' + i + '" data-eid="' + results[i].eventID + '"></tr>');
+          // $('#event' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + eArr[i].eventName + '</span><br><span>' + eArr[i].description + '</span><br><span>' + startT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + ' - ' + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}) + '</span></td>');
+          $('#event_result' + i).html('<td class="event-type" id="event-type' + i + '"><div></div></td><td class="event-info" id="event-info' + i + '"><span class="title">' + results[i].eventName + '</span><br><span>' + nullFix(location) + '</span><br><span>' + startT.toDateString() + '</span><br><span>' + timeParse(results[i].start.substr(11, 8)) + " - " + timeParse(results[i].end.substr(11, 8)) + '</span></td>');
           // console.log("TZ Mods: " + endT.toLocaleTimeString("en-us", {timezone: "America/New_York", hour: "2-digit", minute:"2-digit"}));
           // console.log("TZ No Mods: " + endT.toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"}));
         }
@@ -909,6 +914,7 @@
     }
 
     function timeParse(time) {
+      console.log(time);
       time = time.split(':'); // convert to array
       // fetch
       var hours = Number(time[0]);
@@ -932,17 +938,40 @@
 
     function findEvents(eventDate) {
       var arr = [];
-      //console.log(events.length);
-      for (var i = 0; i < events.length; i++) {
-        var indexDate = new Date(events[i].Event_Start_Date);
+      // console.log(events.length);
+      for (let i = 0; i < events.length; i++) {
+        let indexDate = new Date(events[i].start);
         //add date to events
 
         if (indexDate.getMonth() === eventDate.getMonth() && indexDate.getDate() === eventDate.getDate() && indexDate.getFullYear() === eventDate.getFullYear()) {
           //console.log("found event: " + events[i].Event_ID);
           document.querySelector("#myHeader p").innerHTML = "Selected: " + indexDate.toDateString();
-          arr.push(events[i]);
+          let location = "";
+          if (events[i].spaces.length > 0) {
+            console.log(events[i].spaces);
+            if (events[i].spaces[0].substr(0, 1) >= '0' && events[i].spaces[0].substr(0, 1) <= '9') {
+              console.log(events[i].spaces[0].substr(0, 1));
+              location = "Room ";
+            }
+          }
+
+          for (let x = 0; x < events[i].spaces.length; x++) {
+            location += events[i].spaces[x];
+            location += " "
+          }
+          console.log(location);
+          location = location.substr(0, location.length - 1);
+          arr.push({
+            eventName: events[i].eventName,
+            description: events[i].description,
+            start: events[i].start,
+            end: events[i].end,
+            eventID: events[i].eventID,
+            location: location
+          });
         }
       }
+      console.log(arr);
       return arr;
     }
 
@@ -1118,10 +1147,22 @@
       //console.log(term);
       let search_results = []
       for (let i = 0; i < events.length; i++) {
-        if (events[i].Event_Title.toLowerCase().includes(term.toLowerCase()) || nullFix(events[i].Meeting_Instructions).toLowerCase().includes(term.toLowerCase())) {
+        if (events[i].eventName.toLowerCase().includes(term.toLowerCase()) || nullFix(events[i].description).toLowerCase().includes(term.toLowerCase())) {
           search_results.push(events[i]);
+        } else {
+          let flag1 = false
+          for (let x = 0; x < events[i].spaces.length; x++) {
+            if (events[i].spaces[x].toLowerCase().includes(term.toLowerCase())) {
+              flag1 = true;
+            }
+          }
+          if (flag1) {
+            search_results.push(events[i]);
+          }
+
         }
       }
+      console.log(search_results);
       //proccess results
       let flag = false
       let startIndex = 0;
@@ -1129,7 +1170,7 @@
       for (let i = 0; i < search_results.length && !flag; i++) {
         //console.log(search_results[i]);
         // console.log(search_results[i].Event_Start_Date);
-        let eventDate = new Date(search_results[i].Event_Start_Date);
+        let eventDate = new Date(search_results[i].start);
         // if(currentDate.getMonth() == eventDate.getMonth() && currentDate.getDate() <= eventDate.getDate()){
         //   flag = true;
         //   startIndex = i;

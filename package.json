@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "mp-events",
   "version": "1.0.0",
   "description": "Event calendar with Ministry Platform database integration",

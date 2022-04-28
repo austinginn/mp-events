@@ -1,39 +1,51 @@
 //Event calendar for integrating with a Ministry Platform database 
 
 ///////
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 ///////
 
 //INCLUDES
-const express = require('express');
-const http = require('http');
-const _dirname = require('path').dirname(require.main.filename);
+import express from 'express';
+import http from 'http';
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 const app = express();
-const nodemailer = require("nodemailer");
-const jwt = require('jsonwebtoken');
-// const bcrypt = require('bcrypt');
-const crypto = require('crypto')
-const cookieParser = require("cookie-parser");
-app.use('/static', express.static(_dirname + "/static"));
+import nodemailer from 'nodemailer';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import cookieParser from 'cookie-parser';
+app.use('/static', express.static(__dirname + "/static"));
 app.use(cookieParser());
-
-
 const server = http.Server(app);
-const FastRateLimit = require("@kidkarolis/not-so-fast");
-const bodyParser = require('body-parser');
+
+import FastRateLimit from '@kidkarolis/not-so-fast';
+import bodyParser from 'body-parser';
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-const MP = require("./mp-events.js");
-const fs = require('fs');
+import MP from './mp-events.mjs';
+import Espace from "./espace.mjs";
+import fs from 'fs';
 // const Mail = require('nodemailer/lib/mailer');
 
 const ACCESS_TOKEN_SECRET = crypto.randomBytes(64).toString('hex');
 const REFRESH_TOKEN_SECRET = crypto.randomBytes(64).toString('hex');
 
-var test = new MP(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.ROOT);
+let test;
+
+if(process.env.SOURCE == "espace"){
+	console.log("using espace");
+	test = new Espace("http://159.89.94.105/api/events");
+} else if(process.env.SOURCE == "MP"){
+	test = new MP(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.ROOT);
+} else {
+	throw("source is not set in .env");
+}
 var events = [];
 var cal = "";
-
+let ready = false;
 //RATE LIMITING
 var ips = [];
 var highCostLimiter = new FastRateLimit({
@@ -68,49 +80,6 @@ let debug_arr = [];
 let stats_arr = [];
 let page_views = 0;
 
-//socket io
-///sockets init
-const iot = require('socket.io')(server);
-// const socketioJWT = require('socketio-jwt');
-// const { isObject } = require('util');
-////Socket Init////
-
-// // set authorization for socket.io
-// iot.sockets
-//   .on('connection', socketioJWT.authorize({
-//     secret: ACCESS_TOKEN_SECRET,
-//     timeout: 15000 // 15 seconds to send the authentication message
-//   }))
-//   .on('authenticated', (socket) => {
-//     //this socket is authenticated, we are good to handle more events from it.
-//     console.log(`hello! ${socket.decoded_token.name}`);
-//   });
-
-// iot.sockets
-// .on('connection', socketioJWT.authorize({
-//     secret: ACCESS_TOKEN_SECRET,
-//     timeout: 15000 // 15 seconds to send the authentication message
-//   })).on('authenticated', function(socket) {
-//     //this socket is authenticated, we are good to handle more events from it.
-// 	console.log('socket.io client connected');
-//     console.log(`Hello! ${socket.decoded_token.name}`);
-// 	iot.emit('debug', debug_arr);
-
-// 	socket.on('disconnect', function(){
-// 		console.log('socket.io client disconencted');
-// 	  });
-//   });
-
-// iot.on('connection', function(socket){
-//   console.log('socket.io client connected');
-//   iot.emit('debug', debug_arr);
-
-//   socket.on('disconnect', function(){
-//     console.log('socket.io client disconencted');
-//   });
-// });
-
-
 
 ///HTTP client listen on 3000
 server.listen(3000, function(){
@@ -141,16 +110,16 @@ app.get("/api/ics", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-		res.sendFile(_dirname + "/html/events.html");
+		res.sendFile(__dirname + "/html/events.html");
 		page_views++;
 });
 
 app.get("/admin", authenticateToken, (req, res) => {
-	res.sendFile(_dirname + "/html/debug.html");
+	res.sendFile(__dirname + "/html/debug.html");
 });
 
 app.get("/service-worker.js", (req, res) => {
-	res.sendFile(_dirname + "/service-worker.js");
+	res.sendFile(__dirname + "/service-worker.js");
 });
 
 app.get("/api/data/config", (req, res) => {
@@ -183,7 +152,6 @@ app.get("/api/data/stats", authenticateToken, (req, res) => {
 	.catch(() => {
 		debug("All tokens consumed by " + req.ip);
 	})
-	
 });
 
 
@@ -345,7 +313,7 @@ app.post('/api/update', function(req, res){
 // app.get("/api/debug", authenticateToken, (req, res) => {
 // 	console.log(req.user.name);
 // 	if(DEBUG_PORTAL){
-// 		res.sendFile(_dirname + "/html/debug.html");
+// 		res.sendFile(__dirname + "/html/debug.html");
 // 	}
 // });
 
@@ -355,31 +323,22 @@ function authenticateToken(req, res, next){
 	const authHeader = req.headers['authorization'];
 	const token = authHeader && authHeader.split(' ')[1];
 	// console.log(token);
-	if(token == null) return res.sendFile(_dirname + "/html/login.html");
+	if(token == null) return res.sendFile(__dirname + "/html/login.html");
 
 	jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
-		if(err) return res.sendFile(_dirname + "/html/login.html");
+		if(err) return res.sendFile(__dirname + "/html/login.html");
 		req.user = user;
 		next();
 	})
 
 }
 async function asyncEvents(){
-	var newE = [];
 	var nevents = await test.getEvents();
-	for (var x = 1; x < 12; x++){
-		var itt = 31 * x;
 
-		newE = await test.getEvents('DATEADD(mm%2C%200%2C%20DATEDIFF(mm%2C%20' + itt.toString() + '%2C%20Event_Start_Date))%20%3D%20DATEADD(mm%2C%200%2C%20DATEDIFF(mm%2C%200%2C%20GETDATE()))&%24orderby=Event_Start_Date');
-		for(var i = 0; i < newE.length; i++){
-			nevents.push(newE[i]);
-		}
-	}
-
-	events = visibilityFilter(nevents);
+	events = nevents;
 	//set server time
-	ignoreTZ(events);
-	cal = newCreateICS(events);
+	// ignoreTZ(events);
+	cal = newCreateICS(nevents);
 	debug("Events updated!");
 }
 
@@ -547,12 +506,12 @@ function writeServerConfig(){
 		"light_theme": LIGHT_THEME,
 		"dark_theme": DARK_THEME
 	}
-	fs.writeFileSync(_dirname + '/config.json', JSON.stringify(config), 'utf-8');
+	fs.writeFileSync(__dirname + '/config.json', JSON.stringify(config), 'utf-8');
 }
 
 function configServer(){
 	try{
-		const config = JSON.parse(fs.readFileSync(_dirname + '/config.json', 'utf8'));
+		const config = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8'));
 		if(config){
 			if(config.title != null){
 				WEB_TITLE = config.title;

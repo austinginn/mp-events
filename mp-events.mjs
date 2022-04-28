@@ -1,5 +1,5 @@
 //requires
-var request = require('request');
+import request from 'request';
 
 var MP = function()
 {
@@ -88,4 +88,4 @@ var MP = function()
   return constructor;
 }();
 
-module.exports = MP;
+export default MP;
